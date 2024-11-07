@@ -47,12 +47,12 @@ export default {
             transactionType: this.transactionType
           })
         })
-            .then(response => response.json())
-            .then(() => {
-              this.$emit("transactionAdded");
-              this.clearForm();
-            })
-            .catch(error => console.error('Fehler:', error));
+          .then(response => response.json())
+          .then(() => {
+            this.$emit("transactionAdded");
+            this.clearForm();
+          })
+          .catch(error => console.error('Fehler:', error));
       } else {
         alert('Bitte füllen Sie alle Felder aus.');
       }

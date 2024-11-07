@@ -7,10 +7,10 @@
     </div>
     <TransactionForm @transactionAdded="loadTransactions" />
     <EditTransactionModal
-        v-if="showModal"
-        :transaction="selectedTransaction"
-        @close="closeModal"
-        @transactionUpdated="loadTransactions"
+      v-if="showModal"
+      :transaction="selectedTransaction"
+      @close="closeModal"
+      @transactionUpdated="loadTransactions"
     />
   </div>
 </template>

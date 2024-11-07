@@ -24,21 +24,21 @@ export default {
   methods: {
     loadTransactions() {
       fetch('/api/transactions')
-          .then(response => response.json())
-          .then(data => {
-            this.transactions = data;
-          })
-          .catch(error => console.error('Fehler beim Laden der Transaktionen:', error));
+        .then(response => response.json())
+        .then(data => {
+          this.transactions = data;
+        })
+        .catch(error => console.error('Fehler beim Laden der Transaktionen:', error));
     },
     deleteTransaction(id) {
       fetch(`/api/transactions/${id}`, {
         method: 'DELETE'
       })
-          .then(response => response.json())
-          .then(() => {
-            this.loadTransactions();
-          })
-          .catch(error => console.error('Fehler beim Löschen der Transaktion:', error));
+        .then(response => response.json())
+        .then(() => {
+          this.loadTransactions();
+        })
+        .catch(error => console.error('Fehler beim Löschen der Transaktion:', error));
     }
   }
 };
