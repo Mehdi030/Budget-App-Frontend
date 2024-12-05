@@ -1,35 +1,21 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
-  ],
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "skipLibCheck": true,
-    "resolveJsonModule": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "outDir": "./dist", // Ausgabeort für generierte Dateien
+    "declaration": true, // Deklarationsdateien generieren
+    "declarationMap": false // Keine Mapping-Dateien für Deklarationen
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.vue"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }
