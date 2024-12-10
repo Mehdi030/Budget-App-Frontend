@@ -1,7 +1,9 @@
-import { fileURLToPath, URL } from 'node:url'
+import path from 'path';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+// CommonJS __dirname
+const __dirname = path.resolve();
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,7 +12,17 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': path.resolve(__dirname, './src'),
     },
   },
-})
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // URL des Backends
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // Entferne Präfix '/api', falls nötig
+      },
+    },
+  },
+});

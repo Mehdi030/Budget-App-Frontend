@@ -1,35 +1,83 @@
-@import './base.css';
+/* Globale Stile */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+}
 
-#app {
-  max-width: 1280px;
+h1, h2 {
+  color: #2c3e50;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Styling für Container */
+.container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  padding: 20px;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+/* Layout für die Transaktionsliste */
+.transaction-list {
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.transaction-list th, .transaction-list td {
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+.transaction-list th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.transaction-list tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.transaction-list tr:hover {
+  background-color: #ddd;
+}
+
+.transaction-list td {
+  text-align: center;
+}
+
+/* Styling für Formulare */
+.form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-container input,
+.form-container select {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-container button {
+  width: 100%;
+  font-size: 16px;
 }
