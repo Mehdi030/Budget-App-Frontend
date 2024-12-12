@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { addTransaction, deleteTransaction } from "@/services/apiService";
+import { addTransaction, deleteTransaction, getTransactions } from "@/services/apiService";
 
 export default {
   props: {
@@ -81,6 +81,7 @@ export default {
       isLoading: false,
       errorMessage: "",
       isEditing: false,
+      transactions: [], // Hinzugefügt für die Liste
     };
   },
   methods: {
@@ -97,6 +98,7 @@ export default {
       try {
         await addTransaction(this.newTransaction); // API-Aufruf
         this.$emit("transactionAdded"); // Event auslösen
+        await this.loadTransactions(); // Transaktionen neu laden
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
@@ -116,12 +118,20 @@ export default {
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
         this.$emit("transactionDeleted", this.newTransaction.id);
+        await this.loadTransactions(); // Transaktionen neu laden
         this.resetForm();
       } catch (error) {
         this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    async loadTransactions() {
+      try {
+        this.transactions = await getTransactions(); // Transaktionen laden
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
     validateTransaction() {

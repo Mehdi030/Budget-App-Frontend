@@ -23,26 +23,31 @@ export default {
   },
   data() {
     return {
-      transactions: [],
+      transactions: [], // Initiale Transaktionsliste
     };
   },
   methods: {
-    methods: {
-      async loadTransactions() {
-        try {
-          this.transactions = await getTransactions(); // Transaktionen von der API laden
-          console.log("Transaktionen geladen:", this.transactions);
-        } catch (error) {
-          console.error("Fehler beim Laden der Transaktionen:", error);
-        }
-      },
+    async loadTransactions() {
+      try {
+        this.transactions = await getTransactions(); // Transaktionen von der API laden
+        console.log("Transaktionen geladen:", this.transactions);
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
+      }
     },
-    async mounted() {
-      await this.loadTransactions(); // Transaktionen laden, wenn die Seite geladen wird
+    async addTransaction(transaction) {
+      try {
+        this.transactions.push(transaction); // Neue Transaktion zur Liste hinzufügen
+        console.log("Transaktion hinzugefügt:", transaction);
+      } catch (error) {
+        console.error("Fehler beim Hinzufügen der Transaktion:", error);
+      }
     },
   },
-}
-
+  async mounted() {
+    await this.loadTransactions(); // Transaktionen laden, wenn die Seite geladen wird
+  },
+};
 </script>
 
 <style scoped>
