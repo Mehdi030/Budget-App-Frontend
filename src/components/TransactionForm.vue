@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit">
+  <form @submit.prevent="saveTransaction">
     <!-- Beschreibung -->
     <input
       type="text"
@@ -46,30 +46,11 @@
 
     <!-- Buttons -->
     <div class="button-group">
-      <button type="submit" :disabled="isLoading" class="add-button">
+      <button type="submit" :disabled="isLoading">
         {{ isEditing ? "Aktualisieren" : "Hinzufügen" }}
       </button>
-      <button
-        type="button"
-        @click="deleteTransaction"
-        class="delete-button"
-        v-if="isEditing"
-      >
+      <button type="button" @click="deleteTransaction" v-if="isEditing">
         Löschen
-      </button>
-      <button
-        type="button"
-        @click="editBudget"
-        class="update-budget-button"
-      >
-        Budget ändern
-      </button>
-      <button
-        type="button"
-        @click="deleteBudget"
-        class="delete-budget-button"
-      >
-        Budget löschen
       </button>
     </div>
 
@@ -79,7 +60,7 @@
 </template>
 
 <script>
-import { addTransaction, updateTransaction, deleteTransaction } from "@/services/apiService";
+import { addTransaction, deleteTransaction, getTransactions } from "@/services/apiService";
 
 export default {
   props: {
@@ -100,10 +81,11 @@ export default {
       isLoading: false,
       errorMessage: "",
       isEditing: false,
+      transactions: [], // Hinzugefügt für die Liste
     };
   },
   methods: {
-    async handleSubmit() {
+    async saveTransaction() {
       if (!this.validateTransaction()) {
         this.errorMessage =
           "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
@@ -114,17 +96,13 @@ export default {
       this.errorMessage = "";
 
       try {
-        if (this.isEditing) {
-          await updateTransaction(this.newTransaction); // API-Aufruf für Update
-          this.$emit("transactionUpdated", this.newTransaction);
-        } else {
-          await addTransaction(this.newTransaction); // API-Aufruf für Add
-          this.$emit("transactionAdded");
-        }
+        await addTransaction(this.newTransaction); // API-Aufruf
+        this.$emit("transactionAdded"); // Event auslösen
+        await this.loadTransactions(); // Transaktionen neu laden
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
-          "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+          "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -140,6 +118,7 @@ export default {
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
         this.$emit("transactionDeleted", this.newTransaction.id);
+        await this.loadTransactions(); // Transaktionen neu laden
         this.resetForm();
       } catch (error) {
         this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
@@ -148,29 +127,11 @@ export default {
         this.isLoading = false;
       }
     },
-    async editBudget() {
+    async loadTransactions() {
       try {
-        this.isLoading = true;
-        await updateBudget(this.newTransaction);
-        this.$emit("budgetUpdated", this.newTransaction);
+        this.transactions = await getTransactions(); // Transaktionen laden
       } catch (error) {
-        this.errorMessage = "Fehler beim Ändern des Budgets. Bitte erneut versuchen.";
-        console.error(error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async deleteBudget() {
-      try {
-        this.isLoading = true;
-        await deleteBudget(this.newTransaction.id);
-        this.$emit("budgetDeleted", this.newTransaction.id);
-        this.resetForm();
-      } catch (error) {
-        this.errorMessage = "Fehler beim Löschen des Budgets. Bitte erneut versuchen.";
-        console.error(error);
-      } finally {
-        this.isLoading = false;
+        console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
     validateTransaction() {
@@ -211,7 +172,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  max-width: 600px;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -219,74 +180,44 @@ export default {
 .transaction-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .button-group {
   display: flex;
-  justify-content: space-around;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.add-button {
-  background-color: #007bff;
-  color: white;
-  font-size: 18px;
-  padding: 15px;
+button {
+  padding: 12px;
+  font-size: 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.add-button:hover {
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+}
+
+button[type="submit"]:hover {
   background-color: #0056b3;
 }
 
-.delete-button {
+button[type="button"] {
   background-color: #dc3545;
   color: white;
-  font-size: 18px;
-  padding: 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
-.delete-button:hover {
+button[type="button"]:hover {
   background-color: #a71d2a;
-}
-
-.update-budget-button {
-  background-color: #ffc107;
-  color: black;
-  font-size: 18px;
-  padding: 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.update-budget-button:hover {
-  background-color: #e0a800;
-}
-
-.delete-budget-button {
-  background-color: #6c757d;
-  color: white;
-  font-size: 18px;
-  padding: 15px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.delete-budget-button:hover {
-  background-color: #5a6268;
 }
 
 .error-message {
   color: red;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
 }
 </style>

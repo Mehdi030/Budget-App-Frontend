@@ -95,6 +95,7 @@ export default {
   width: 100%;
   height: 400px;
 }
+
 canvas {
   width: 100%;
   height: 100%;

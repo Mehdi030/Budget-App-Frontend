@@ -7,9 +7,10 @@
         :key="transaction.id"
         class="transaction-item"
       >
+        <!-- Transaktion als Button -->
         <button
           class="transaction-button"
-          @click="openEditModal(transaction)"
+          @click="handleEditTransaction(transaction)"
         >
           <div class="transaction-description">
             {{ transaction.beschreibung }} - {{ transaction.betrag }} €
@@ -59,8 +60,8 @@ export default {
       const date = new Date(datum);
       return date.toLocaleDateString("de-DE"); // Format für deutsche Datumsanzeige
     },
-    openEditModal(transaction) {
-      this.$emit("openEditModal", transaction); // Event für Eltern-Komponente auslösen
+    handleEditTransaction(transaction) {
+      this.$emit("openEditModal", transaction); // Event auslösen
     },
   },
   async mounted() {
@@ -71,10 +72,10 @@ export default {
 
 <style scoped>
 .transaction-list-container {
-  background-color: #ffffff; /* Weißer Hintergrund */
-  padding: 20px; /* Abstand innen */
-  border-radius: 8px; /* Abgerundete Ecken */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Dezenter Schatten */
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
@@ -87,36 +88,33 @@ export default {
 }
 
 .transaction-list {
-  list-style: none; /* Entferne Aufzählungspunkte */
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .transaction-item {
-  margin-bottom: 10px; /* Abstand zwischen den Einträgen */
+  margin-bottom: 10px;
 }
 
 .transaction-button {
   display: flex;
-  justify-content: space-between; /* Platzierung der Elemente */
-  align-items: center;
+  flex-direction: column;
   width: 100%;
-  padding: 12px 15px; /* Innenabstand */
-  background-color: #f9fafc; /* Heller Hintergrund */
-  border: none;
-  border-radius: 8px; /* Abgerundete Ecken */
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05); /* Leichter Schatten */
+  padding: 15px;
   font-size: 16px;
-  font-weight: bold;
-  color: inherit; /* Vererbt Textfarbe */
   text-align: left;
+  background-color: #f9fafc;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s; /* Sanfte Übergänge */
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .transaction-button:hover {
-  background-color: #f1f5f9; /* Leichte Hervorhebung */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Stärkere Hervorhebung */
+  background-color: #f1f5f9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .transaction-description {
@@ -126,8 +124,8 @@ export default {
 }
 
 .transaction-details {
-  text-align: right;
   font-size: 14px;
   color: #666;
+  margin-top: 5px;
 }
 </style>
