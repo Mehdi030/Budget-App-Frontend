@@ -1,19 +1,20 @@
 <template>
   <div class="home">
-    <img class="logo" alt="Vue logo" src="../assets/logo.svg" />
     <h1>Budgetverwaltung</h1>
 
     <!-- Gesamtbudget anzeigen -->
-    <BudgetSummary />
+    <div class="section">
+      <BudgetSummary />
+    </div>
 
     <!-- Formular für neue Transaktionen -->
-    <div class="form-container">
+    <div class="section">
       <h2>Neue Transaktion hinzufügen</h2>
       <TransactionForm @transactionAdded="loadTransactions" />
     </div>
 
     <!-- Transaktionsliste anzeigen -->
-    <div class="list-container">
+    <div class="section">
       <h2>Transaktionsliste</h2>
       <TransactionList :transactions="transactions" />
     </div>
@@ -58,59 +59,40 @@ export default {
 <style scoped>
 .home {
   text-align: center;
-  margin-top: 20px;
+  margin: 20px;
   font-family: Arial, sans-serif;
   color: #333;
 }
 
-.logo {
-  width: 100px;
-  margin-bottom: 20px;
+.section {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #222;
 }
 
 h2 {
-  font-size: 1.8rem;
-  margin-bottom: 15px;
+  font-size: 1.5rem;
   color: #555;
 }
 
-.form-container,
-.list-container {
-  margin: 30px auto;
-  padding: 20px;
-  max-width: 800px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-form input,
-form select,
-form button {
-  width: calc(100% - 20px);
-  max-width: 300px;
-  margin: 10px auto;
-  padding: 10px;
+button {
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  display: block;
-}
-
-form button {
+  padding: 10px 20px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-form button:hover {
+button:hover {
   background-color: #0056b3;
 }
 </style>
