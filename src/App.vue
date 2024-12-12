@@ -4,10 +4,10 @@
     <div class="content">
       <!-- Chart und Liste im flexiblen Layout -->
       <div class="left-panel">
-        <TransactionChart />
+        <TransactionChart :transactions="transactions" />
       </div>
       <div class="right-panel">
-        <TransactionList @openEditModal="openEditModal" />
+        <TransactionList :transactions="transactions" @openEditModal="openEditModal" />
       </div>
     </div>
 
@@ -31,6 +31,7 @@ import TransactionChart from "./components/TransactionChart.vue";
 import TransactionList from "./components/TransactionList.vue";
 import TransactionForm from "./components/TransactionForm.vue";
 import EditTransactionModal from "./components/EditTransactionModal.vue";
+import { getTransactions } from "@/services/apiService";
 
 export default {
   components: {
@@ -43,9 +44,18 @@ export default {
     return {
       showModal: false,
       selectedTransaction: null,
+      transactions: [], // Liste der Transaktionen
     };
   },
   methods: {
+    async loadTransactions() {
+      try {
+        const data = await getTransactions(); // API-Aufruf
+        this.transactions = data; // Transaktionen aktualisieren
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
+      }
+    },
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
@@ -53,9 +63,9 @@ export default {
     closeModal() {
       this.showModal = false;
     },
-    loadTransactions() {
-      // Lade Transaktionen, z. B. vom Server
-    },
+  },
+  async mounted() {
+    await this.loadTransactions(); // Transaktionen beim Laden der App laden
   },
 };
 </script>
@@ -97,5 +107,17 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .left-panel,
+  .right-panel {
+    margin-bottom: 20px;
+  }
 }
 </style>
