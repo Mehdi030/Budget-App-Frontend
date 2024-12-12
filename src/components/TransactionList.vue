@@ -1,9 +1,18 @@
 <template>
-  <div>
-    <h2>Transaktionsliste</h2>
-    <ul>
-      <li v-for="transaction in transactions" :key="transaction.id">
-        {{ transaction.beschreibung }} - {{ transaction.betrag }} € ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
+  <div class="transaction-list-container">
+    <h2 class="transaction-list-title">Transaktionsliste</h2>
+    <ul class="transaction-list">
+      <li
+        v-for="transaction in localTransactions"
+        :key="transaction.id"
+        class="transaction-item"
+      >
+        <div class="transaction-description">
+          {{ transaction.beschreibung }} - {{ transaction.betrag }} €
+        </div>
+        <div class="transaction-details">
+          ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
+        </div>
       </li>
     </ul>
   </div>
@@ -13,16 +22,30 @@
 import { getTransactions } from "@/services/apiService";
 
 export default {
+  props: {
+    transactions: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
-      transactions: [], // Speichert die Transaktionsdaten
+      localTransactions: [], // Lokale Kopie der Transaktionsdaten
     };
+  },
+  watch: {
+    transactions: {
+      immediate: true,
+      handler(newTransactions) {
+        this.localTransactions = [...newTransactions]; // Lokale Kopie aktualisieren
+      },
+    },
   },
   methods: {
     async loadTransactions() {
       try {
-        this.transactions = await getTransactions(); // API-Aufruf
-        console.log("Transaktionen geladen:", this.transactions);
+        this.localTransactions = await getTransactions(); // API-Aufruf
+        console.log("Transaktionen geladen:", this.localTransactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
