@@ -44,19 +44,31 @@
       required
     />
 
-    <!-- Button -->
-    <button type="submit" :disabled="isLoading">
-      {{ isLoading ? "Hinzufügen..." : "Hinzufügen" }}
-    </button>
+    <!-- Buttons -->
+    <div class="button-group">
+      <button type="submit" :disabled="isLoading">
+        {{ isEditing ? "Aktualisieren" : "Hinzufügen" }}
+      </button>
+      <button type="button" @click="deleteTransaction" v-if="isEditing">
+        Löschen
+      </button>
+    </div>
+
     <!-- Fehlermeldung -->
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </form>
 </template>
 
 <script>
-import { addTransaction } from "@/services/apiService";
+import { addTransaction, deleteTransaction } from "@/services/apiService";
 
 export default {
+  props: {
+    transactionToEdit: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       newTransaction: {
@@ -64,10 +76,11 @@ export default {
         betrag: 0,
         kategorie: "",
         typ: "",
-        datum: "", // Neues Feld
+        datum: "",
       },
       isLoading: false,
       errorMessage: "",
+      isEditing: false,
     };
   },
   methods: {
@@ -82,11 +95,34 @@ export default {
       this.errorMessage = "";
 
       try {
-        await addTransaction(this.newTransaction); // API-Aufruf
-        this.$emit("transactionAdded"); // Event auslösen, um die Transaktionsliste zu aktualisieren
+        if (this.isEditing) {
+          // Update-Logik hier
+          await this.$emit("updateTransaction", this.newTransaction);
+        } else {
+          await addTransaction(this.newTransaction); // API-Aufruf
+          this.$emit("transactionAdded"); // Event auslösen, um die Transaktionsliste zu aktualisieren
+        }
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
-        this.errorMessage = "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
+        this.errorMessage = "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async deleteTransaction() {
+      if (!this.newTransaction.id) {
+        this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
+        return;
+      }
+
+      this.isLoading = true;
+      try {
+        await deleteTransaction(this.newTransaction.id); // API-Aufruf
+        this.$emit("transactionDeleted", this.newTransaction.id);
+        this.resetForm();
+      } catch (error) {
+        this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -104,6 +140,20 @@ export default {
         typ: "",
         datum: "",
       };
+      this.isEditing = false;
+    },
+  },
+  watch: {
+    transactionToEdit: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue) {
+          this.newTransaction = { ...newValue };
+          this.isEditing = true;
+        } else {
+          this.resetForm();
+        }
+      },
     },
   },
 };
@@ -121,55 +171,42 @@ export default {
   margin-right: auto;
 }
 
-.transaction-form-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
 .transaction-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.form-input,
-.form-select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.form-input:focus,
-.form-select:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.submit-button {
-  background-color: #007bff;
-  color: white;
+button {
   padding: 12px;
   font-size: 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.submit-button:hover {
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+}
+
+button[type="submit"]:hover {
   background-color: #0056b3;
 }
 
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+button[type="button"] {
+  background-color: #dc3545;
+  color: white;
+}
+
+button[type="button"]:hover {
+  background-color: #a71d2a;
 }
 
 .error-message {
