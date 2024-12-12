@@ -1,32 +1,11 @@
 <template>
   <div class="modal" v-if="transaction">
     <div class="modal-content">
-      <button class="close" @click="$emit('close')">&times;</button>
+      <span class="close" @click="$emit('close')">&times;</span>
       <h2>Transaktion bearbeiten</h2>
-
-      <!-- Beschreibung -->
-      <label for="description">Beschreibung</label>
-      <input
-        id="description"
-        type="text"
-        v-model="transaction.description"
-        required
-      />
-
-      <!-- Betrag -->
-      <label for="amount">Betrag</label>
-      <input
-        id="amount"
-        type="number"
-        v-model="transaction.amount"
-        required
-        min="0.01"
-      />
-
-      <!-- Kategorie -->
-      <label for="category">Kategorie</label>
-      <select id="category" v-model="transaction.category" required>
-        <option value="" disabled>Kategorie wählen</option>
+      <input type="text" v-model="transaction.beschreibung" required />
+      <input type="number" v-model="transaction.betrag" required />
+      <select v-model="transaction.kategorie" required>
         <option value="Lebensmittel">Lebensmittel</option>
         <option value="Miete">Miete</option>
         <option value="Transport">Transport</option>
@@ -35,17 +14,12 @@
         <option value="Bildung">Bildung</option>
         <option value="Sonstiges">Sonstiges</option>
       </select>
-
-      <!-- Typ -->
-      <label for="transactionType">Typ</label>
-      <select id="transactionType" v-model="transaction.transactionType" required>
-        <option value="" disabled>Typ wählen</option>
+      <select v-model="transaction.typ" required>
         <option value="Einnahme">Einnahme</option>
         <option value="Ausgabe">Ausgabe</option>
       </select>
-
-      <!-- Speichern -->
-      <button class="save-btn" @click="saveTransaction">Speichern</button>
+      <input type="date" v-model="transaction.datum" required />
+      <button @click="saveTransaction">Speichern</button>
     </div>
   </div>
 </template>
@@ -55,8 +29,8 @@ export default {
   props: ["transaction"],
   methods: {
     saveTransaction() {
-      // Emit-Events für Aktualisierung und Schließen
-      this.$emit("transactionUpdated");
+      // API-Aufruf zum Speichern der bearbeiteten Transaktion
+      this.$emit("transactionUpdated", this.transaction);
       this.$emit("close");
     },
   },

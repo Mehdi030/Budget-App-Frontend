@@ -1,17 +1,9 @@
 <template>
-  <div class="transaction-list-container">
-    <h2 class="transaction-list-title">Transaktionsliste</h2>
-    <ul class="transaction-list">
-      <li
-        v-for="transaction in transactions"
-        :key="transaction.id"
-        class="transaction-item"
-      >
-        <div class="transaction-description">{{ transaction.beschreibung }}</div>
-        <div class="transaction-details">
-          <span class="transaction-amount">{{ transaction.betrag }} €</span>
-          <span class="transaction-category">({{ transaction.kategorie }})</span>
-        </div>
+  <div>
+    <h2>Transaktionsliste</h2>
+    <ul>
+      <li v-for="transaction in transactions" :key="transaction.id">
+        {{ transaction.beschreibung }} - {{ transaction.betrag }} € ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
       </li>
     </ul>
   </div>
@@ -26,13 +18,22 @@ export default {
       transactions: [], // Speichert die Transaktionsdaten
     };
   },
+  methods: {
+    async loadTransactions() {
+      try {
+        this.transactions = await getTransactions(); // API-Aufruf
+        console.log("Transaktionen geladen:", this.transactions);
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
+      }
+    },
+    formatDatum(datum) {
+      const date = new Date(datum);
+      return date.toLocaleDateString("de-DE"); // Format für deutsche Datumsanzeige
+    },
+  },
   async mounted() {
-    try {
-      this.transactions = await getTransactions(); // API-Aufruf
-      console.log("Transaktionen geladen:", this.transactions);
-    } catch (error) {
-      console.error("Fehler beim Laden der Transaktionen:", error);
-    }
+    await this.loadTransactions();
   },
 };
 </script>

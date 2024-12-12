@@ -1,7 +1,5 @@
 <template>
-  <div class="chart-container">
-    <canvas id="transactionChart"></canvas>
-  </div>
+  <canvas id="transactionChart"></canvas>
 </template>
 
 <script>
@@ -10,65 +8,24 @@ import { Chart } from "chart.js";
 export default {
   props: ["transactions"],
   mounted() {
-    // Initialisiere das Chart.js-Diagramm
     const ctx = document.getElementById("transactionChart").getContext("2d");
     this.chart = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: [], // Kategorien
+        labels: [],
         datasets: [
-          {
-            label: "Einnahmen",
-            data: [],
-            backgroundColor: "rgba(75, 192, 192, 0.7)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "Ausgaben",
-            data: [],
-            backgroundColor: "rgba(255, 99, 132, 0.7)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-          },
+          { label: "Einnahmen", data: [], backgroundColor: "rgba(75, 192, 192, 0.2)", borderColor: "rgba(75, 192, 192, 1)", borderWidth: 1 },
+          { label: "Ausgaben", data: [], backgroundColor: "rgba(255, 99, 132, 0.2)", borderColor: "rgba(255, 99, 132, 1)", borderWidth: 1 },
         ],
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-          tooltip: {
-            callbacks: {
-              label: (tooltipItem) =>
-                `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)} €`,
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: "Betrag (€)",
-            },
-          },
-          x: {
-            title: {
-              display: true,
-              text: "Kategorien",
-            },
-          },
-        },
+        scales: { x: { beginAtZero: true } },
       },
     });
 
     this.updateChart();
   },
   watch: {
-    // Beobachte Änderungen an den Transaktionen
     transactions: "updateChart",
   },
   methods: {
@@ -77,29 +34,19 @@ export default {
       const expenseData = [];
       const labels = [];
 
-      // Daten aus Transaktionen extrahieren
       this.transactions.forEach((transaction) => {
-        const index = labels.indexOf(transaction.category);
+        const date = new Date(transaction.datum).toLocaleDateString("de-DE");
+        const index = labels.indexOf(date);
         if (index === -1) {
-          // Neue Kategorie hinzufügen
-          labels.push(transaction.category);
-          incomeData.push(
-            transaction.transactionType === "Einnahme" ? transaction.amount : 0
-          );
-          expenseData.push(
-            transaction.transactionType === "Ausgabe" ? transaction.amount : 0
-          );
+          labels.push(date);
+          incomeData.push(transaction.typ === "Einnahme" ? transaction.betrag : 0);
+          expenseData.push(transaction.typ === "Ausgabe" ? transaction.betrag : 0);
         } else {
-          // Bestehende Kategorie aktualisieren
-          if (transaction.transactionType === "Einnahme") {
-            incomeData[index] += transaction.amount;
-          } else {
-            expenseData[index] += transaction.amount;
-          }
+          if (transaction.typ === "Einnahme") incomeData[index] += transaction.betrag;
+          else expenseData[index] += transaction.betrag;
         }
       });
 
-      // Aktualisiere die Diagrammdaten
       this.chart.data.labels = labels;
       this.chart.data.datasets[0].data = incomeData;
       this.chart.data.datasets[1].data = expenseData;
