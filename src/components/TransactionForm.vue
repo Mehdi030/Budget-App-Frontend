@@ -16,8 +16,10 @@
         v-model="newTransaction.betrag"
         placeholder="Betrag"
         required
-        min="0.01"
+        min="0"
+        step="any"
       />
+
 
       <!-- Kategorie -->
       <select v-model="newTransaction.kategorie" required>
