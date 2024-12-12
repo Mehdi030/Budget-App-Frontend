@@ -59,11 +59,17 @@
       </button>
       <button
         type="button"
-        @click="updateTransaction"
-        class="update-button"
-        v-if="!isEditing"
+        @click="editBudget"
+        class="update-budget-button"
       >
-        Transaktion aktualisieren
+        Budget ändern
+      </button>
+      <button
+        type="button"
+        @click="deleteBudget"
+        class="delete-budget-button"
+      >
+        Budget löschen
       </button>
     </div>
 
@@ -73,7 +79,7 @@
 </template>
 
 <script>
-import { addTransaction, updateTransaction, deleteTransaction } from "@/services/apiService";
+import { addTransaction, updateTransaction, deleteTransaction, updateBudget, deleteBudget } from "@/services/apiService";
 
 export default {
   props: {
@@ -137,6 +143,31 @@ export default {
         this.resetForm();
       } catch (error) {
         this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async editBudget() {
+      try {
+        this.isLoading = true;
+        await updateBudget(this.newTransaction);
+        this.$emit("budgetUpdated", this.newTransaction);
+      } catch (error) {
+        this.errorMessage = "Fehler beim Ändern des Budgets. Bitte erneut versuchen.";
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async deleteBudget() {
+      try {
+        this.isLoading = true;
+        await deleteBudget(this.newTransaction.id);
+        this.$emit("budgetDeleted", this.newTransaction.id);
+        this.resetForm();
+      } catch (error) {
+        this.errorMessage = "Fehler beim Löschen des Budgets. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -225,8 +256,22 @@ export default {
   background-color: #a71d2a;
 }
 
-.update-button {
-  background-color: #28a745;
+.update-budget-button {
+  background-color: #ffc107;
+  color: black;
+  font-size: 18px;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.update-budget-button:hover {
+  background-color: #e0a800;
+}
+
+.delete-budget-button {
+  background-color: #6c757d;
   color: white;
   font-size: 18px;
   padding: 15px;
@@ -235,8 +280,8 @@ export default {
   cursor: pointer;
 }
 
-.update-button:hover {
-  background-color: #1e7e34;
+.delete-budget-button:hover {
+  background-color: #5a6268;
 }
 
 .error-message {
