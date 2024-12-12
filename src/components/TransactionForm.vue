@@ -48,10 +48,14 @@
     <button type="submit" :disabled="isLoading">
       {{ isLoading ? "Hinzufügen..." : "Hinzufügen" }}
     </button>
+    <!-- Fehlermeldung -->
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </form>
 </template>
 
 <script>
+import { addTransaction } from "@/services/apiService";
+
 export default {
   data() {
     return {
@@ -68,7 +72,38 @@ export default {
   },
   methods: {
     async saveTransaction() {
-      // Validierung und API-Aufruf hier
+      if (!this.validateTransaction()) {
+        this.errorMessage =
+          "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
+        return;
+      }
+
+      this.isLoading = true;
+      this.errorMessage = "";
+
+      try {
+        await addTransaction(this.newTransaction); // API-Aufruf
+        this.$emit("transactionAdded"); // Event auslösen, um die Transaktionsliste zu aktualisieren
+        this.resetForm(); // Formular zurücksetzen
+      } catch (error) {
+        this.errorMessage = "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    validateTransaction() {
+      const { beschreibung, betrag, kategorie, typ, datum } = this.newTransaction;
+      return beschreibung && betrag > 0 && kategorie && typ && datum;
+    },
+    resetForm() {
+      this.newTransaction = {
+        beschreibung: "",
+        betrag: 0,
+        kategorie: "",
+        typ: "",
+        datum: "",
+      };
     },
   },
 };
