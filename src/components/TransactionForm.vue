@@ -95,16 +95,12 @@ export default {
       this.errorMessage = "";
 
       try {
-        if (this.isEditing) {
-          // Update-Logik hier
-          await this.$emit("updateTransaction", this.newTransaction);
-        } else {
-          await addTransaction(this.newTransaction); // API-Aufruf
-          this.$emit("transactionAdded"); // Event auslösen, um die Transaktionsliste zu aktualisieren
-        }
+        await addTransaction(this.newTransaction); // API-Aufruf
+        this.$emit("transactionAdded"); // Event auslösen
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
-        this.errorMessage = "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+        this.errorMessage =
+          "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;

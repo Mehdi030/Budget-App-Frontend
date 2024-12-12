@@ -27,18 +27,22 @@ export default {
     };
   },
   methods: {
-    async loadTransactions() {
-      try {
-        this.transactions = await getTransactions();
-      } catch (error) {
-        console.error("Fehler beim Laden der Transaktionen:", error);
-      }
+    methods: {
+      async loadTransactions() {
+        try {
+          this.transactions = await getTransactions(); // Transaktionen von der API laden
+          console.log("Transaktionen geladen:", this.transactions);
+        } catch (error) {
+          console.error("Fehler beim Laden der Transaktionen:", error);
+        }
+      },
+    },
+    async mounted() {
+      await this.loadTransactions(); // Transaktionen laden, wenn die Seite geladen wird
     },
   },
-  mounted() {
-    this.loadTransactions();
-  },
-};
+}
+
 </script>
 
 <style scoped>
