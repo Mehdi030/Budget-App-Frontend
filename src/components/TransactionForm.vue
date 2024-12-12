@@ -18,6 +18,7 @@
         placeholder="Betrag"
         required
         min="0.01"
+        step="0.01"
         class="form-input"
       />
 
