@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://budget-app-backend-4ckr.onrender.com";
+  const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com";
 
 // Hilfsfunktion zur Verarbeitung von API-Antworten
 const handleResponse = async (response) => {
@@ -9,7 +9,6 @@ const handleResponse = async (response) => {
   }
   return response.json();
 };
-
 
 // Transaktionen abrufen
 export const getTransactions = async () => {
@@ -33,6 +32,21 @@ export const addTransaction = async (transaction) => {
     return handleResponse(response);
   } catch (error) {
     console.error("Fehler beim Hinzufügen der Transaktion:", error);
+    throw error;
+  }
+};
+
+// Transaktion bearbeiten
+export const updateTransaction = async (id, transaction) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(transaction),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Fehler beim Aktualisieren der Transaktion:", error);
     throw error;
   }
 };

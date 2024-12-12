@@ -1,57 +1,85 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.svg" />
-    <h1>Willkommen zur Budget-App</h1>
-
-    <!-- Gesamtbudget anzeigen -->
-    <BudgetSummary />
-
-    <!-- Formular für neue Transaktionen -->
+  <div class="container">
+    <h1>Budgetverwaltung</h1>
+    <div class="content">
+      <TransactionChart :transactions="transactions" />
+      <TransactionList
+        :transactions="transactions"
+        @openEditModal="handleEditTransaction"
+      />
+    </div>
     <TransactionForm @transactionAdded="loadTransactions" />
 
-    <!-- Transaktionsliste anzeigen -->
-    <TransactionList :transactions="transactions" />
+    <!-- Bearbeitungsmodal -->
+    <EditTransactionModal
+      v-if="showEditModal"
+      :transaction="transactionToEdit"
+      @close="closeEditModal"
+      @transactionUpdated="loadTransactions"
+    />
   </div>
 </template>
 
 <script>
-import BudgetSummary from "@/components/BudgetSummary.vue";
-import TransactionForm from "@/components/TransactionForm.vue";
+import TransactionChart from "@/components/TransactionChart.vue";
 import TransactionList from "@/components/TransactionList.vue";
+import TransactionForm from "@/components/TransactionForm.vue";
+import EditTransactionModal from "@/components/EditTransactionModal.vue";
 import { getTransactions } from "@/services/apiService";
 
 export default {
-  name: "HomeView",
   components: {
-    BudgetSummary,
-    TransactionForm,
+    TransactionChart,
     TransactionList,
+    TransactionForm,
+    EditTransactionModal,
   },
   data() {
     return {
-      transactions: [], // Speichert die Transaktionsdaten
+      transactions: [], // Liste der Transaktionen
+      showEditModal: false, // Modal-Status
+      transactionToEdit: null, // Die Transaktion, die bearbeitet wird
     };
   },
   methods: {
     async loadTransactions() {
       try {
-        this.transactions = await getTransactions(); // Lade Transaktionen aus der API
-        console.log("Transaktionen aktualisiert:", this.transactions);
+        this.transactions = await getTransactions(); // Transaktionen laden
+        console.log("Transaktionen geladen:", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
+    handleEditTransaction(transaction) {
+      this.transactionToEdit = transaction; // Die zu bearbeitende Transaktion setzen
+      this.showEditModal = true; // Modal anzeigen
+    },
+    closeEditModal() {
+      this.showEditModal = false; // Modal schließen
+      this.transactionToEdit = null; // Transaktion zurücksetzen
+    },
   },
   async mounted() {
-    // Lade Transaktionen, wenn die Seite geladen wird
-    await this.loadTransactions();
+    await this.loadTransactions(); // Transaktionen laden
   },
 };
 </script>
 
 <style scoped>
-.home {
-  text-align: center;
-  margin-top: 50px;
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+.content > * {
+  flex: 1;
 }
 </style>
