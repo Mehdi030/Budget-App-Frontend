@@ -11,8 +11,8 @@
 
 <script>
 import TransactionChart from "@/components/TransactionChart.vue";
-import TransactionList from "@/components/TransactionList.vue";
 import TransactionForm from "@/components/TransactionForm.vue";
+import TransactionList from "@/components/TransactionList.vue";
 import { getTransactions } from "@/services/apiService";
 
 export default {
