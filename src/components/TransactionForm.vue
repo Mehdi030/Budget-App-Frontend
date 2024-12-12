@@ -53,6 +53,12 @@
 import { addTransaction } from "@/services/apiService";
 
 export default {
+  props: {
+    transactions: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       newTransaction: {
@@ -66,35 +72,29 @@ export default {
     };
   },
   methods: {
-    // Transaktion speichern
     async saveTransaction() {
-      // Validierung vor dem API-Aufruf
       if (!this.validateTransaction()) {
         this.errorMessage = "Bitte alle Felder ausfüllen und einen gültigen Betrag eingeben!";
         return;
       }
 
-      this.isLoading = true; // Ladezustand aktivieren
-      this.errorMessage = ""; // Fehlermeldung zurücksetzen
+      this.isLoading = true;
+      this.errorMessage = "";
 
       try {
         const result = await addTransaction(this.newTransaction); // API-Aufruf
         console.log("Transaktion hinzugefügt:", result);
 
-        // Formular zurücksetzen
-        this.newTransaction = { beschreibung: "", betrag: 0, kategorie: "", typ: "" };
+        this.$emit("transactionAdded", result); // Event auslösen
 
-        // Event für Eltern-Komponente (z. B. Liste aktualisieren)
-        this.$emit("transactionAdded");
+        this.newTransaction = { beschreibung: "", betrag: 0, kategorie: "", typ: "" }; // Formular zurücksetzen
       } catch (error) {
         this.errorMessage = "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
         console.error("Fehler beim Hinzufügen der Transaktion:", error);
       } finally {
-        this.isLoading = false; // Ladezustand deaktivieren
+        this.isLoading = false;
       }
     },
-
-    // Validierung der Eingaben
     validateTransaction() {
       const { beschreibung, betrag, kategorie, typ } = this.newTransaction;
       return beschreibung && betrag > 0 && kategorie && typ;

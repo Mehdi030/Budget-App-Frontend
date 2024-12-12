@@ -2,8 +2,8 @@
   <div class="container">
     <h1>Budgetverwaltung</h1>
     <div style="display: flex; justify-content: space-between;">
-      <TransactionChart />
-      <TransactionList @openEditModal="openEditModal" />
+      <TransactionChart :transactions="transactions" />
+      <TransactionList :transactions="transactions" @openEditModal="openEditModal" />
     </div>
     <TransactionForm @transactionAdded="loadTransactions" />
     <EditTransactionModal
@@ -20,6 +20,7 @@ import TransactionChart from "./components/TransactionChart.vue";
 import TransactionList from "./components/TransactionList.vue";
 import TransactionForm from "./components/TransactionForm.vue";
 import EditTransactionModal from "./components/EditTransactionModal.vue";
+import { getTransactions } from "@/services/apiService";
 
 export default {
   components: {
@@ -32,6 +33,7 @@ export default {
     return {
       showModal: false,
       selectedTransaction: null,
+      transactions: [],
     };
   },
   methods: {
@@ -42,9 +44,17 @@ export default {
     closeModal() {
       this.showModal = false;
     },
-    loadTransactions() {
-      // Lade Transaktionen, z. B. vom Server
+    async loadTransactions() {
+      try {
+        this.transactions = await getTransactions(); // API-Aufruf
+        console.log("Transaktionen geladen:", this.transactions);
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
+      }
     },
+  },
+  async mounted() {
+    await this.loadTransactions(); // Transaktionen beim Start laden
   },
 };
 </script>

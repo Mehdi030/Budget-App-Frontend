@@ -10,21 +10,12 @@
 </template>
 
 <script>
-import { getTransactions } from "@/services/apiService";
-
 export default {
-  data() {
-    return {
-      transactions: [], // Speichert die Transaktionsdaten
-    };
-  },
-  async mounted() {
-    try {
-      this.transactions = await getTransactions(); // API-Aufruf
-      console.log("Transaktionen geladen:", this.transactions);
-    } catch (error) {
-      console.error("Fehler beim Laden der Transaktionen:", error);
-    }
+  props: {
+    transactions: {
+      type: Array,
+      required: true,
+    },
   },
 };
 </script>
