@@ -11,6 +11,9 @@ importers:
       chart.js:
         specifier: ^4.4.6
         version: 4.4.6
+      pnpm:
+        specifier: ^9.15.0
+        version: 9.15.0
       vue:
         specifier: ^3.5.12
         version: 3.5.13(typescript@5.6.3)
@@ -1210,6 +1213,11 @@ packages:
   pidtree@0.6.0:
     resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
     engines: {node: '>=0.10'}
+    hasBin: true
+
+  pnpm@9.15.0:
+    resolution: {integrity: sha512-duI3l2CkMo7EQVgVvNZije5yevN3mqpMkU45RBVsQpmSGon5djge4QfUHxLPpLZmgcqccY8GaPoIMe1MbYulbA==}
+    engines: {node: '>=18.12'}
     hasBin: true
 
   postcss-selector-parser@6.1.2:
@@ -2681,6 +2689,8 @@ snapshots:
   picomatch@2.3.1: {}
 
   pidtree@0.6.0: {}
+
+  pnpm@9.15.0: {}
 
   postcss-selector-parser@6.1.2:
     dependencies:
