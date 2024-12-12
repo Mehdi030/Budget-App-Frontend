@@ -1,68 +1,112 @@
 <template>
-  <div class="form-container">
+  <div>
     <h2>Neue Transaktion hinzufügen</h2>
-    <select v-model="transactionType" required>
-      <option value="">Transaktionstyp wählen</option>
-      <option value="Einnahme">Einnahme</option>
-      <option value="Ausgabe">Ausgabe</option>
-    </select>
-    <input type="text" v-model="description" placeholder="Beschreibung" required />
-    <input type="number" v-model="amount" placeholder="Betrag in €" required />
-    <select v-model="category" required>
-      <option value="">Kategorie wählen</option>
-      <option value="Lebensmittel">Lebensmittel</option>
-      <option value="Miete">Miete</option>
-      <option value="Transport">Transport</option>
-      <option value="Unterhaltung">Unterhaltung</option>
-      <option value="Gesundheit">Gesundheit</option>
-      <option value="Bildung">Bildung</option>
-      <option value="Sonstiges">Sonstiges</option>
-    </select>
-    <button @click="addTransaction">Hinzufügen</button>
+    <form @submit.prevent="saveTransaction">
+      <!-- Beschreibung -->
+      <input
+        type="text"
+        v-model="newTransaction.beschreibung"
+        placeholder="Beschreibung"
+        required
+      />
+
+      <!-- Betrag -->
+      <input
+        type="number"
+        v-model="newTransaction.betrag"
+        placeholder="Betrag"
+        required
+        min="0.01"
+      />
+
+      <!-- Kategorie -->
+      <select v-model="newTransaction.kategorie" required>
+        <option value="">Kategorie wählen</option>
+        <option value="Lebensmittel">Lebensmittel</option>
+        <option value="Miete">Miete</option>
+        <option value="Transport">Transport</option>
+        <option value="Unterhaltung">Unterhaltung</option>
+        <option value="Gesundheit">Gesundheit</option>
+        <option value="Bildung">Bildung</option>
+        <option value="Sonstiges">Sonstiges</option>
+      </select>
+
+      <!-- Typ -->
+      <select v-model="newTransaction.typ" required>
+        <option value="">Typ wählen</option>
+        <option value="Einnahme">Einnahme</option>
+        <option value="Ausgabe">Ausgabe</option>
+      </select>
+
+      <!-- Button -->
+      <button type="submit" :disabled="isLoading">
+        {{ isLoading ? "Hinzufügen..." : "Hinzufügen" }}
+      </button>
+    </form>
+
+    <!-- Fehlermeldung -->
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script>
+import { addTransaction } from "@/services/apiService";
+
 export default {
   data() {
     return {
-      description: "",
-      amount: null,
-      category: "",
-      transactionType: "",
+      newTransaction: {
+        beschreibung: "",
+        betrag: 0,
+        kategorie: "",
+        typ: "",
+      },
+      isLoading: false, // Ladezustand
+      errorMessage: "", // Fehlermeldung
     };
   },
   methods: {
-    addTransaction() {
-      if (this.description && this.amount && this.category && this.transactionType) {
-        fetch('/api/transactions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            description: this.description,
-            amount: this.amount,
-            category: this.category,
-            transactionType: this.transactionType
-          })
-        })
-          .then(response => response.json())
-          .then(() => {
-            this.$emit("transactionAdded");
-            this.clearForm();
-          })
-          .catch(error => console.error('Fehler:', error));
-      } else {
-        alert('Bitte füllen Sie alle Felder aus.');
+    // Transaktion speichern
+    async saveTransaction() {
+      // Validierung vor dem API-Aufruf
+      if (!this.validateTransaction()) {
+        this.errorMessage = "Bitte alle Felder ausfüllen und einen gültigen Betrag eingeben!";
+        return;
+      }
+
+      this.isLoading = true; // Ladezustand aktivieren
+      this.errorMessage = ""; // Fehlermeldung zurücksetzen
+
+      try {
+        const result = await addTransaction(this.newTransaction); // API-Aufruf
+        console.log("Transaktion hinzugefügt:", result);
+
+        // Formular zurücksetzen
+        this.newTransaction = { beschreibung: "", betrag: 0, kategorie: "", typ: "" };
+
+        // Event für Eltern-Komponente (z. B. Liste aktualisieren)
+        this.$emit("transactionAdded");
+      } catch (error) {
+        this.errorMessage = "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
+        console.error("Fehler beim Hinzufügen der Transaktion:", error);
+      } finally {
+        this.isLoading = false; // Ladezustand deaktivieren
       }
     },
-    clearForm() {
-      this.description = "";
-      this.amount = null;
-      this.category = "";
-      this.transactionType = "";
-    }
-  }
+
+    // Validierung der Eingaben
+    validateTransaction() {
+      const { beschreibung, betrag, kategorie, typ } = this.newTransaction;
+      return beschreibung && betrag > 0 && kategorie && typ;
+    },
+  },
 };
 </script>
+
+<style scoped>
+.error {
+  color: red;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+</style>

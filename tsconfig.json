@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"], // Node-Typen hinzugefügt
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
@@ -16,6 +16,12 @@
     "declaration": true, // Deklarationsdateien generieren
     "declarationMap": false // Keine Mapping-Dateien für Deklarationen
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "vite.config.ts" // Stelle sicher, dass Vite-Datei eingeschlossen wird
+  ],
   "exclude": ["node_modules", "dist"]
 }

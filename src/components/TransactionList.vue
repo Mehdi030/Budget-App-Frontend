@@ -1,45 +1,30 @@
 <template>
-  <div class="history-container">
-    <h2>Transaktionshistorie</h2>
+  <div>
+    <h2>Transaktionsliste</h2>
     <ul>
       <li v-for="transaction in transactions" :key="transaction.id">
-        {{ transaction.description }} - {{ transaction.amount }} € - {{ transaction.category }}
-        <button @click="$emit('openEditModal', transaction)">Aktualisieren</button>
-        <button @click="deleteTransaction(transaction.id)">Löschen</button>
+        {{ transaction.beschreibung }} - {{ transaction.betrag }} € ({{ transaction.kategorie }})
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { getTransactions } from "@/services/apiService";
+
 export default {
   data() {
     return {
-      transactions: []
+      transactions: [], // Speichert die Transaktionsdaten
     };
   },
-  mounted() {
-    this.loadTransactions();
-  },
-  methods: {
-    loadTransactions() {
-      fetch('/api/transactions')
-        .then(response => response.json())
-        .then(data => {
-          this.transactions = data;
-        })
-        .catch(error => console.error('Fehler beim Laden der Transaktionen:', error));
-    },
-    deleteTransaction(id) {
-      fetch(`/api/transactions/${id}`, {
-        method: 'DELETE'
-      })
-        .then(response => response.json())
-        .then(() => {
-          this.loadTransactions();
-        })
-        .catch(error => console.error('Fehler beim Löschen der Transaktion:', error));
+  async mounted() {
+    try {
+      this.transactions = await getTransactions(); // API-Aufruf
+      console.log("Transaktionen geladen:", this.transactions);
+    } catch (error) {
+      console.error("Fehler beim Laden der Transaktionen:", error);
     }
-  }
+  },
 };
 </script>
