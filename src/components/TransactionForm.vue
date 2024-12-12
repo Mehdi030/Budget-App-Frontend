@@ -1,13 +1,14 @@
 <template>
-  <div>
-    <h2>Neue Transaktion hinzufügen</h2>
-    <form @submit.prevent="saveTransaction">
+  <div class="transaction-form-container">
+    <h2 class="transaction-form-title">Neue Transaktion hinzufügen</h2>
+    <form @submit.prevent="saveTransaction" class="transaction-form">
       <!-- Beschreibung -->
       <input
         type="text"
         v-model="newTransaction.beschreibung"
         placeholder="Beschreibung"
         required
+        class="form-input"
       />
 
       <!-- Betrag -->
@@ -17,11 +18,12 @@
         placeholder="Betrag"
         required
         min="0.01"
+        class="form-input"
       />
 
       <!-- Kategorie -->
-      <select v-model="newTransaction.kategorie" required>
-        <option value="">Kategorie wählen</option>
+      <select v-model="newTransaction.kategorie" required class="form-select">
+        <option value="" disabled>Kategorie wählen</option>
         <option value="Lebensmittel">Lebensmittel</option>
         <option value="Miete">Miete</option>
         <option value="Transport">Transport</option>
@@ -32,20 +34,20 @@
       </select>
 
       <!-- Typ -->
-      <select v-model="newTransaction.typ" required>
-        <option value="">Typ wählen</option>
+      <select v-model="newTransaction.typ" required class="form-select">
+        <option value="" disabled>Typ wählen</option>
         <option value="Einnahme">Einnahme</option>
         <option value="Ausgabe">Ausgabe</option>
       </select>
 
       <!-- Button -->
-      <button type="submit" :disabled="isLoading">
+      <button type="submit" :disabled="isLoading" class="submit-button">
         {{ isLoading ? "Hinzufügen..." : "Hinzufügen" }}
       </button>
     </form>
 
     <!-- Fehlermeldung -->
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -104,9 +106,71 @@ export default {
 </script>
 
 <style scoped>
-.error {
+.transaction-form-container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.transaction-form-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.transaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-input,
+.form-select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
   color: red;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  font-size: 14px;
+  text-align: center;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="budget-summary">
     <h2>Gesamtbudget</h2>
-    <p>{{ totalBudget }} €</p>
+    <p class="budget-value">{{ totalBudget.toFixed(2) }} €</p>
   </div>
 </template>
 
@@ -24,3 +24,25 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.budget-summary {
+  text-align: center;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+}
+
+.budget-summary h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.budget-value {
+  font-size: 2rem;
+  font-weight: bold;
+}
+</style>

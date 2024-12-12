@@ -10,57 +10,39 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
+// Wiederverwendbare Fetch-Hilfsfunktion
+const fetchApi = async (endpoint, options = {}) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    return handleResponse(response);
+  } catch (error) {
+    console.error("API Fetch Error:", error);
+    throw error;
+  }
+};
 
 // Transaktionen abrufen
 export const getTransactions = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Fehler beim Abrufen der Transaktionen:", error);
-    throw error;
-  }
+  return fetchApi("/api/transactions");
 };
 
 // Neue Transaktion hinzufügen
 export const addTransaction = async (transaction) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(transaction),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Fehler beim Hinzufügen der Transaktion:", error);
-    throw error;
-  }
+  return fetchApi("/api/transactions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(transaction),
+  });
 };
 
 // Transaktion löschen
 export const deleteTransaction = async (id) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      console.error(`Failed to delete transaction: ${errorDetails}`);
-      throw new Error(`Failed to delete transaction: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error("Fehler beim Löschen der Transaktion:", error);
-    throw error;
-  }
+  await fetchApi(`/api/transactions/${id}`, {
+    method: "DELETE",
+  });
 };
 
 // Gesamtbudget abrufen
 export const getTotalBudget = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/totalBudget`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Fehler beim Abrufen des Gesamtbudgets:", error);
-    throw error;
-  }
+  return fetchApi("/api/totalBudget");
 };
