@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { addTransaction, updateTransaction, deleteTransaction, updateBudget, deleteBudget } from "@/services/apiService";
+import { addTransaction, updateTransaction, deleteTransaction} from "@/services/apiService";
 
 export default {
   props: {
