@@ -82,7 +82,7 @@ export default {
       this.chart.update();
     },
   },
-  beforeDestroy() {
+  beforeUnmount() { // Statt beforeDestroy
     if (this.chart) {
       this.chart.destroy();
     }
