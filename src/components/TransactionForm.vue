@@ -129,8 +129,8 @@ export default {
       this.isLoading = true;
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
-        this.$emit("transactionDeleted", this.newTransaction.id);
-        this.resetForm();
+        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
+        this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
           "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
