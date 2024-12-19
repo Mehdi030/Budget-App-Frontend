@@ -1,7 +1,5 @@
 const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com"; // Produktions-Backend
 
-export default API_BASE_URL;
-
 // Hilfsfunktion zur Verarbeitung von API-Antworten
 const handleResponse = async (response) => {
   if (!response.ok) {
@@ -75,20 +73,4 @@ export const handleOptimisticUpdate = async (id, updatedTransaction, transaction
     // 3. Rollback, falls API fehlschlägt
     setTransactions(originalTransactions);
   }
-  export const deleteTransaction = async (id) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const errorDetails = await response.text();
-        console.error(`Failed to delete transaction: ${errorDetails}`);
-        throw new Error(`Failed to delete transaction: ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error("Fehler beim Löschen der Transaktion:", error);
-      throw error;
-    }
-  };
-
 };
