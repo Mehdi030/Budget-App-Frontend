@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="saveTransaction">
+  <form @submit.prevent="handleSubmit">
     <!-- Beschreibung -->
     <input
       type="text"
@@ -46,10 +46,15 @@
 
     <!-- Buttons -->
     <div class="button-group">
-      <button type="submit" :disabled="isLoading">
+      <button type="submit" :disabled="isLoading" class="add-button">
         {{ isEditing ? "Aktualisieren" : "Hinzufügen" }}
       </button>
-      <button type="button" @click="deleteTransaction" v-if="isEditing">
+      <button
+        type="button"
+        @click="deleteTransaction"
+        class="delete-button"
+        v-if="isEditing"
+      >
         Löschen
       </button>
     </div>
@@ -60,7 +65,11 @@
 </template>
 
 <script>
-import { addTransaction, deleteTransaction, getTransactions } from "@/services/apiService";
+import {
+  addTransaction,
+  updateTransaction,
+  deleteTransaction,
+} from "@/services/apiService";
 
 export default {
   props: {
@@ -81,11 +90,10 @@ export default {
       isLoading: false,
       errorMessage: "",
       isEditing: false,
-      transactions: [], // Hinzugefügt für die Liste
     };
   },
   methods: {
-    async saveTransaction() {
+    async handleSubmit() {
       if (!this.validateTransaction()) {
         this.errorMessage =
           "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
@@ -96,13 +104,17 @@ export default {
       this.errorMessage = "";
 
       try {
-        await addTransaction(this.newTransaction); // API-Aufruf
-        this.$emit("transactionAdded"); // Event auslösen
-        await this.loadTransactions(); // Transaktionen neu laden
+        if (this.isEditing) {
+          await updateTransaction(this.newTransaction.id, this.newTransaction); // API-Aufruf für Update
+          this.$emit("transactionUpdated", this.newTransaction);
+        } else {
+          await addTransaction(this.newTransaction); // API-Aufruf für Add
+          this.$emit("transactionAdded");
+        }
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
-          "Fehler beim Hinzufügen der Transaktion. Bitte erneut versuchen.";
+          "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -118,20 +130,13 @@ export default {
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
         this.$emit("transactionDeleted", this.newTransaction.id);
-        await this.loadTransactions(); // Transaktionen neu laden
         this.resetForm();
       } catch (error) {
-        this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
+        this.errorMessage =
+          "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
-      }
-    },
-    async loadTransactions() {
-      try {
-        this.transactions = await getTransactions(); // Transaktionen laden
-      } catch (error) {
-        console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
     validateTransaction() {
@@ -166,58 +171,4 @@ export default {
 </script>
 
 <style scoped>
-.transaction-form-container {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.transaction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-button {
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-}
-
-button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-button[type="button"] {
-  background-color: #dc3545;
-  color: white;
-}
-
-button[type="button"]:hover {
-  background-color: #a71d2a;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-}
 </style>

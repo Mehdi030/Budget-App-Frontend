@@ -1,80 +1,78 @@
-const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com";
+const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com"; // Produktions-Backend
+
+export default API_BASE_URL;
 
 // Hilfsfunktion zur Verarbeitung von API-Antworten
 const handleResponse = async (response) => {
   if (!response.ok) {
-    const errorDetails = await response.text();
-    console.error(`API Error: ${response.status} - ${response.statusText}, Details: ${errorDetails}`);
-    throw new Error(`Fehler: ${response.status} - ${response.statusText}`);
+    let errorDetails;
+    try {
+      errorDetails = await response.json(); // JSON-Fehlerdetails abrufen
+    } catch {
+      errorDetails = await response.text(); // Fallback auf Text-Fehlerdetails
+    }
+    console.error(`API Error: ${response.status} - ${response.statusText}, Details:`, errorDetails);
+    throw {
+      status: response.status,
+      message: response.statusText,
+      details: errorDetails,
+    };
   }
   return response.json();
 };
 
-// Transaktionen abrufen
-export const getTransactions = async () => {
+// Allgemeine Fetch-Funktion
+const apiFetch = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const defaultOptions = {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  };
   try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`);
+    const response = await fetch(url, defaultOptions);
     return handleResponse(response);
   } catch (error) {
-    console.error("Fehler beim Abrufen der Transaktionen:", error);
+    console.error(`API Fetch Error [${endpoint}]:`, error);
     throw error;
   }
 };
 
-// Neue Transaktion hinzufügen
-export const addTransaction = async (transaction) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(transaction),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Fehler beim Hinzufügen der Transaktion:", error);
-    throw error;
-  }
-};
+// API-Funktionen
+export const getTransactions = async () => apiFetch("/api/transactions");
 
-// Transaktion bearbeiten
-export const updateTransaction = async (id, transaction) => {
+export const addTransaction = async (transaction) =>
+  apiFetch("/api/transactions", {
+    method: "POST",
+    body: JSON.stringify(transaction),
+  });
+
+export const updateTransaction = async (id, transaction) =>
+  apiFetch(`/api/transactions/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(transaction),
+  });
+
+export const deleteTransaction = async (id) =>
+  apiFetch(`/api/transactions/${id}`, { method: "DELETE" });
+
+export const getTotalBudget = async () => apiFetch("/api/totalBudget");
+
+// Beispiel: Optimistisches Update für bessere UX
+export const handleOptimisticUpdate = async (id, updatedTransaction, transactions, setTransactions) => {
+  // 1. Temporär UI aktualisieren
+  const originalTransactions = [...transactions];
+  setTransactions(
+    transactions.map((transaction) =>
+      transaction.id === id ? { ...transaction, ...updatedTransaction } : transaction
+    )
+  );
+
   try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(transaction),
-    });
-    return handleResponse(response);
+    // 2. API-Aufruf für das Update
+    await updateTransaction(id, updatedTransaction);
   } catch (error) {
     console.error("Fehler beim Aktualisieren der Transaktion:", error);
-    throw error;
-  }
-};
-
-// Transaktion löschen
-export const deleteTransaction = async (id) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      console.error(`Failed to delete transaction: ${errorDetails}`);
-      throw new Error(`Failed to delete transaction: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error("Fehler beim Löschen der Transaktion:", error);
-    throw error;
-  }
-};
-
-// Gesamtbudget abrufen
-export const getTotalBudget = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/totalBudget`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error("Fehler beim Abrufen des Gesamtbudgets:", error);
-    throw error;
+    // 3. Rollback, falls API fehlschlägt
+    setTransactions(originalTransactions);
   }
 };
