@@ -75,4 +75,20 @@ export const handleOptimisticUpdate = async (id, updatedTransaction, transaction
     // 3. Rollback, falls API fehlschlägt
     setTransactions(originalTransactions);
   }
+  export const deleteTransaction = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        console.error(`Failed to delete transaction: ${errorDetails}`);
+        throw new Error(`Failed to delete transaction: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Fehler beim Löschen der Transaktion:", error);
+      throw error;
+    }
+  };
+
 };
