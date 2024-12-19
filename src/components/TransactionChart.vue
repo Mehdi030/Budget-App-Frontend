@@ -5,11 +5,12 @@
 </template>
 
 <script>
-import { Chart } from "chart.js";
+import { Chart, registerables } from "chart.js";
 
 export default {
   props: ["transactions"],
   mounted() {
+    Chart.register(...registerables); // Registriere alle notwendigen Komponenten
     this.createChart();
   },
   watch: {
