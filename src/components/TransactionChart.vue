@@ -57,9 +57,12 @@ export default {
       const labels = [];
       const incomeData = [];
       const expenseData = [];
-
+      if (!Array.isArray(this.transactions)) {
+        console.error("Ungültige Transaktionsdaten:", this.transactions);
+        return;
+      }
       this.transactions.forEach((transaction) => {
-        if (!labels.includes(transaction.kategorie)) {
+        if (transaction.kategorie && !labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
         }
       });
