@@ -62,7 +62,11 @@ export default {
         return;
       }
       this.transactions.forEach((transaction) => {
-        if (transaction.kategorie && !labels.includes(transaction.kategorie)) {
+        if (!transaction.kategorie || !transaction.typ || transaction.betrag === undefined) {
+          console.warn("Ungültige Transaktion übersprungen:", transaction);
+          return;
+        }
+        if (!labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
         }
       });
