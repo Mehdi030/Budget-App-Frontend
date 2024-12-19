@@ -130,18 +130,19 @@
 
         try {
           if (this.isEditing) {
-            await updateTransaction(this.newTransaction); // API-Aufruf für Update
+            await updateTransaction(this.newTransaction.id, this.newTransaction); // API-Aufruf für Update
             this.$emit("transactionUpdated", this.newTransaction);
           } else {
-            await addTransaction(this.newTransaction); // API-Aufruf für Add
+            const response = await addTransaction(this.newTransaction); // API-Aufruf für Add
+            this.newTransaction.id = response.id; // Speichere die ID, falls zurückgegeben
             this.$emit("transactionAdded");
           }
           this.resetForm(); // Formular zurücksetzen
         } catch (error) {
           this.errorMessage =
-            "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+            error.response?.data?.message || "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
           console.error(error);
-        } finally {
+        }finally {
           this.isLoading = false;
         }
       },
@@ -164,6 +165,10 @@
         }
       },
       async editBudget() {
+        if (!this.validateTransaction()) {
+          this.errorMessage = "Ungültige Transaktionsdaten für die Budgetänderung.";
+          return;
+        }
         try {
           this.isLoading = true;
           await updateBudget(this.newTransaction);
@@ -190,6 +195,12 @@
       },
       validateTransaction() {
         const { beschreibung, betrag, kategorie, typ, datum } = this.newTransaction;
+        const validDate = new Date(datum);
+        if (isNaN(validDate)) {
+          this.errorMessage = "Ungültiges Datum.";
+          return false;
+        }
+        this.newTransaction.datum = validDate.toISOString().split('T')[0];
         return beschreibung && betrag > 0 && kategorie && typ && datum;
       },
       resetForm() {
