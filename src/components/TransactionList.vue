@@ -3,7 +3,7 @@
     <h2 class="transaction-list-title">Transaktionsliste</h2>
     <transition-group name="fade" tag="ul" class="transaction-list">
       <li
-        v-for="transaction in localTransactions"
+        v-for="(transaction, index) in localTransactions.slice(0, 5)"
         :key="transaction.id"
         class="transaction-item"
       >
@@ -91,6 +91,8 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 300px; /* Feste Höhe für Scrollbarkeit */
+  overflow-y: auto; /* Vertikales Scrollen erlauben */
 }
 
 .transaction-item {
