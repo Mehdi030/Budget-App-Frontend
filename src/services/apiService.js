@@ -44,11 +44,14 @@ export const addTransaction = async (transaction) =>
     body: JSON.stringify(transaction),
   });
 
-export const updateTransaction = async (id, transaction) =>
-  apiFetch(`/api/transactions/${id}`, {
+export const updateTransaction = async (id, transaction) => {
+  console.log("Update-Request an API: ", id, transaction);
+  return apiFetch(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(transaction),
   });
+};
+
 
 export const deleteTransaction = async (id) =>
   apiFetch(`/api/transactions/${id}`, { method: "DELETE" });

@@ -38,11 +38,7 @@
     </select>
 
     <!-- Datum -->
-    <input
-      type="date"
-      v-model="newTransaction.datum"
-      required
-    />
+    <input type="date" v-model="newTransaction.datum" required />
 
     <!-- Buttons -->
     <div class="button-group">
@@ -65,11 +61,7 @@
 </template>
 
 <script>
-import {
-  addTransaction,
-  updateTransaction,
-  deleteTransaction,
-} from "@/services/apiService";
+import { addTransaction, updateTransaction, deleteTransaction } from "@/services/apiService";
 
 export default {
   props: {
@@ -95,8 +87,7 @@ export default {
   methods: {
     async handleSubmit() {
       if (!this.validateTransaction()) {
-        this.errorMessage =
-          "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
+        this.errorMessage = "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
         return;
       }
 
@@ -105,17 +96,19 @@ export default {
 
       try {
         if (this.isEditing) {
-          await updateTransaction(this.newTransaction.id, this.newTransaction); // API-Aufruf für Update
-          this.$emit("transactionUpdated", this.newTransaction);
+          console.log("Sende Update: ", this.newTransaction);
+          const updatedTransaction = await updateTransaction(this.newTransaction.id, this.newTransaction);
+          console.log("Update erfolgreich: ", updatedTransaction);
+          this.$emit("transactionUpdated", updatedTransaction);
         } else {
-          await addTransaction(this.newTransaction); // API-Aufruf für Add
-          this.$emit("transactionAdded");
+          const addedTransaction = await addTransaction(this.newTransaction);
+          console.log("Hinzufügen erfolgreich: ", addedTransaction);
+          this.$emit("transactionAdded", addedTransaction);
         }
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
-        this.errorMessage =
-          "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
-        console.error(error);
+        this.errorMessage = "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+        console.error("Fehler beim Speichern der Transaktion: ", error);
       } finally {
         this.isLoading = false;
       }
@@ -132,8 +125,7 @@ export default {
         this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
-        this.errorMessage =
-          "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
+        this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -171,4 +163,11 @@ export default {
 </script>
 
 <style scoped>
+/* Stile für den Formularbereich */
+.add-button,
+.delete-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
 </style>
