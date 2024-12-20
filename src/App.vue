@@ -78,47 +78,51 @@ export default {
 </script>
 
 <style scoped>
+/* Container für die gesamte App */
 .budget-container {
-  max-width: 1200px;
+  max-width: 1400px; /* Breitere maximale Breite für den Container */
   margin: 0 auto;
   padding: 20px;
   text-align: center;
 }
 
+/* Titel */
 .title {
   font-size: 2.5rem;
   color: #333;
   margin-bottom: 20px;
 }
 
+/* Hauptinhalt: Chart und Liste */
 .content {
   display: flex;
-  gap: 20px;
+  gap: 40px; /* Größerer Abstand zwischen Chart und Liste */
   justify-content: space-between;
   margin-bottom: 40px;
 }
 
-.left-panel,
-.right-panel {
-  flex: 1;
+/* Chart-Panel */
+.left-panel {
+  flex: 2; /* Chart breiter machen */
   padding: 15px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-height: 400px; /* Mindesthöhe für Konsistenz */
 }
 
-/* Vergrößere die Chart */
-.left-panel {
-  flex: 1.5; /* Chart breiter machen */
-}
-
-/* Vergrößere die Liste */
+/* Listen-Panel */
 .right-panel {
-  flex: 1.2;
-  max-height: 400px; /* Begrenze die Höhe */
-  overflow-y: auto; /* Scrollbar für viele Einträge */
+  flex: 1.5; /* Liste schmaler machen als Chart */
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-height: 500px; /* Begrenze die Höhe */
+  overflow-y: auto; /* Scrollen für viele Einträge */
 }
 
+/* Formularcontainer */
 .form-container {
   margin-top: 20px;
   padding: 20px;
@@ -126,7 +130,7 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-width: 800px; /* Begrenze die Breite */
+  max-width: 800px; /* Begrenze die Breite des Formulars */
   margin: 20px auto; /* Zentriere das Formular */
 }
 
