@@ -87,7 +87,8 @@ export default {
   methods: {
     async handleSubmit() {
       if (!this.validateTransaction()) {
-        this.errorMessage = "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
+        this.errorMessage =
+          "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
         return;
       }
 
@@ -96,18 +97,19 @@ export default {
 
       try {
         if (this.isEditing) {
-          console.log("Sende Update: ", this.newTransaction);
-          const updatedTransaction = await updateTransaction(this.newTransaction.id, this.newTransaction);
-          console.log("Update erfolgreich: ", updatedTransaction);
+          const updatedTransaction = await updateTransaction(
+            this.newTransaction.id,
+            this.newTransaction
+          );
           this.$emit("transactionUpdated", updatedTransaction);
         } else {
           const addedTransaction = await addTransaction(this.newTransaction);
-          console.log("Hinzufügen erfolgreich: ", addedTransaction);
           this.$emit("transactionAdded", addedTransaction);
         }
-        this.resetForm(); // Formular zurücksetzen
+        this.resetForm(); // Nur bei Erfolg aufrufen
       } catch (error) {
-        this.errorMessage = "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+        this.errorMessage =
+          "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
         console.error("Fehler beim Speichern der Transaktion: ", error);
       } finally {
         this.isLoading = false;
