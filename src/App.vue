@@ -4,16 +4,21 @@
     <div class="content">
       <!-- Chart und Liste im flexiblen Layout -->
       <div class="left-panel">
-        <TransactionChart />
+        <TransactionChart :transactions="transactions" />
       </div>
       <div class="right-panel">
-        <TransactionList @openEditModal="openEditModal" />
+        <TransactionList
+          :transactions="transactions"
+          @openEditModal="openEditModal"
+        />
       </div>
     </div>
 
     <!-- Formular für neue Transaktionen -->
     <div class="form-container">
-      <TransactionForm @transactionAdded="loadTransactions" />
+      <TransactionForm
+        @transactionAdded="reloadTransactions"
+      />
     </div>
 
     <!-- Modal für Transaktionsbearbeitung -->
@@ -21,7 +26,8 @@
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="loadTransactions"
+      @transactionUpdated="reloadTransactions"
+      @transactionDeleted="reloadTransactions"
     />
   </div>
 </template>
@@ -31,6 +37,7 @@ import TransactionChart from "./components/TransactionChart.vue";
 import TransactionList from "./components/TransactionList.vue";
 import TransactionForm from "./components/TransactionForm.vue";
 import EditTransactionModal from "./components/EditTransactionModal.vue";
+import { getTransactions } from "@/services/apiService";
 
 export default {
   components: {
@@ -41,21 +48,31 @@ export default {
   },
   data() {
     return {
+      transactions: [],
       showModal: false,
       selectedTransaction: null,
     };
   },
   methods: {
+    async reloadTransactions() {
+      try {
+        this.transactions = await getTransactions(); // Lade Transaktionen vom Server
+        console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
+      } catch (error) {
+        console.error("Fehler beim Laden der Transaktionen:", error);
+      }
+    },
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
     closeModal() {
+      this.selectedTransaction = null;
       this.showModal = false;
     },
-    loadTransactions() {
-      // Lade Transaktionen, z. B. vom Server
-    },
+  },
+  async mounted() {
+    await this.reloadTransactions(); // Lade Transaktionen beim ersten Rendern
   },
 };
 </script>
