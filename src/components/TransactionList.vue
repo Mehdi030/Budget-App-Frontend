@@ -18,7 +18,44 @@
           <div class="transaction-details">
             ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
           </div>
-        </button>
+        </button><template>
+        <div class="transaction-list-container">
+          <h2 class="transaction-list-title">Transaktionsliste</h2>
+          <transition-group name="fade" tag="ul" class="transaction-list">
+            <li
+              v-for="transaction in localTransactions"
+              :key="transaction.id"
+              class="transaction-item"
+            >
+              <!-- Transaktion als Button -->
+              <button
+                class="transaction-button"
+                @click="handleEditTransaction(transaction)"
+              >
+                <div class="transaction-description">
+                  {{ transaction.beschreibung }} - {{ transaction.betrag }} €
+                </div>
+                <div class="transaction-details">
+                  ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
+                </div>
+              </button>
+            </li>
+          </transition-group>
+        </div>
+      </template>
+
+        <style scoped>
+          /* Animationen für Fade-In/Out */
+          .fade-enter-active,
+          .fade-leave-active {
+            transition: opacity 0.5s ease;
+          }
+          .fade-enter,
+          .fade-leave-to {
+            opacity: 0;
+          }
+        </style>
+
       </li>
     </ul>
   </div>
