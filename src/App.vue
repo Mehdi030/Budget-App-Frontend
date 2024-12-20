@@ -7,18 +7,18 @@
         <TransactionChart :transactions="transactions" />
       </div>
       <div class="right-panel">
-        <TransactionList
-          :transactions="transactions"
-          @openEditModal="openEditModal"
-        />
+        <transition-group name="fade" tag="div">
+          <TransactionList
+            :transactions="transactions"
+            @openEditModal="openEditModal"
+          />
+        </transition-group>
       </div>
     </div>
 
     <!-- Formular für neue Transaktionen -->
     <div class="form-container">
-      <TransactionForm
-        @transactionAdded="reloadTransactions"
-      />
+      <TransactionForm @transactionAdded="reloadTransactions" />
     </div>
 
     <!-- Modal für Transaktionsbearbeitung -->
@@ -107,6 +107,18 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Vergrößere die Chart */
+.left-panel {
+  flex: 1.5; /* Chart breiter machen */
+}
+
+/* Vergrößere die Liste */
+.right-panel {
+  flex: 1.2;
+  max-height: 400px; /* Begrenze die Höhe */
+  overflow-y: auto; /* Scrollbar für viele Einträge */
+}
+
 .form-container {
   margin-top: 20px;
   padding: 20px;
@@ -114,5 +126,17 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 800px; /* Begrenze die Breite */
+  margin: 20px auto; /* Zentriere das Formular */
+}
+
+/* Animationen für Fade-In/Out */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
