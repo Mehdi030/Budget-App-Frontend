@@ -1,5 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com"; // Produktions-Backend
 
+// Hilfsfunktion zur Verarbeitung von API-Antworten
 const handleResponse = async (response) => {
   if (!response.ok) {
     let errorDetails;
@@ -18,7 +19,7 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
-
+// Allgemeine Fetch-Funktion
 const apiFetch = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const defaultOptions = {
@@ -34,7 +35,7 @@ const apiFetch = async (endpoint, options = {}) => {
   }
 };
 
-
+// API-Funktionen
 export const getTransactions = async () => apiFetch("/api/transactions");
 
 export const addTransaction = async (transaction) =>
@@ -51,14 +52,15 @@ export const updateTransaction = async (id, transaction) => {
   });
 };
 
+
 export const deleteTransaction = async (id) =>
   apiFetch(`/api/transactions/${id}`, { method: "DELETE" });
 
 export const getTotalBudget = async () => apiFetch("/api/totalBudget");
 
-
+// Beispiel: Optimistisches Update für bessere UX
 export const handleOptimisticUpdate = async (id, updatedTransaction, transactions, setTransactions) => {
-
+  // 1. Temporär UI aktualisieren
   const originalTransactions = [...transactions];
   setTransactions(
     transactions.map((transaction) =>
@@ -67,10 +69,11 @@ export const handleOptimisticUpdate = async (id, updatedTransaction, transaction
   );
 
   try {
-
+    // 2. API-Aufruf für das Update
     await updateTransaction(id, updatedTransaction);
   } catch (error) {
     console.error("Fehler beim Aktualisieren der Transaktion:", error);
+    // 3. Rollback, falls API fehlschlägt
     setTransactions(originalTransactions);
   }
 };
