@@ -26,7 +26,7 @@
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="reloadTransactions"
+      @transactionUpdated="handleTransactionUpdated"
       @transactionDeleted="reloadTransactions"
     />
   </div>
@@ -60,6 +60,15 @@ export default {
         console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
+      }
+    },
+    handleTransactionUpdated(updatedTransaction) {
+      const index = this.transactions.findIndex(
+        (transaction) => transaction.id === updatedTransaction.id
+      );
+      if (index !== -1) {
+        // Ersetze die alte Transaktion mit der aktualisierten
+        this.transactions.splice(index, 1, updatedTransaction);
       }
     },
     openEditModal(transaction) {
