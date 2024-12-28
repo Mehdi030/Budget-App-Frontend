@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://budget-app-backend-1k4q.onrender.com"; // Produktions-Backend
+const API_BASE_URL = "https://budget-app-backend-4ckr.onrender.com"; // Produktions-Backend
 
 // Hilfsfunktion zur Verarbeitung von API-Antworten
 const handleResponse = async (response) => {
