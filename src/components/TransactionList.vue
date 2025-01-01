@@ -92,8 +92,9 @@ export default {
             (transaction) => transaction.id !== id
           ); // Lokale Liste aktualisieren
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
+          this.errorMessage = ""; // Fehlernachricht zurücksetzen
         } catch (error) {
-          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:", error);
           this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
         } finally {
           this.isLoading = false; // Ladeanzeige stoppen
