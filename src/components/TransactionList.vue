@@ -83,7 +83,7 @@ export default {
           await deleteTransaction(id); // API-Aufruf zum Löschen
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
         } catch (error) {
-          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:", error);
           this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
         }
       }
