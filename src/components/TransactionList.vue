@@ -9,7 +9,11 @@
       >
         <div class="transaction-info">
           <!-- Bearbeiten-Button -->
-          <button class="transaction-button" @click="handleEditTransaction(transaction)">
+          <button
+            class="transaction-button"
+            @click="handleEditTransaction(transaction)"
+            :disabled="isLoading"
+          >
             <div class="transaction-description">
               {{ transaction.beschreibung }} - {{ transaction.betrag }} €
             </div>
@@ -18,12 +22,19 @@
             </div>
           </button>
           <!-- Löschen-Button -->
-          <button class="delete-button" @click="deleteTransaction(transaction.id)">
+          <button
+            class="delete-button"
+            @click="deleteTransaction(transaction.id)"
+            :disabled="isLoading"
+          >
             Löschen
           </button>
         </div>
       </li>
     </transition-group>
+
+    <!-- Fehlermeldung -->
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -40,6 +51,8 @@ export default {
   data() {
     return {
       localTransactions: [], // Lokale Kopie der Transaktionen
+      isLoading: false, // Zustand für Ladeanzeige
+      errorMessage: "", // Fehlermeldungen speichern
     };
   },
   watch: {
@@ -53,10 +66,14 @@ export default {
   methods: {
     async loadTransactions() {
       try {
+        this.isLoading = true; // Ladeanzeige starten
         this.localTransactions = await getTransactions(); // API-Aufruf
         console.log("Transaktionen geladen:", this.localTransactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
+        this.errorMessage = "Fehler beim Laden der Transaktionen.";
+      } finally {
+        this.isLoading = false; // Ladeanzeige stoppen
       }
     },
     formatDatum(datum) {
@@ -68,6 +85,7 @@ export default {
     },
     async deleteTransaction(id) {
       if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
+        this.isLoading = true; // Ladeanzeige starten
         try {
           await deleteTransaction(id); // API-Aufruf zum Löschen
           this.localTransactions = this.localTransactions.filter(
@@ -76,7 +94,9 @@ export default {
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
-          alert("Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.");
+          this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
+        } finally {
+          this.isLoading = false; // Ladeanzeige stoppen
         }
       }
     },
@@ -166,6 +186,18 @@ export default {
 
 .delete-button:hover {
   background-color: darkred;
+}
+
+.delete-button:disabled {
+  background-color: #ffcccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 15px;
 }
 
 /* Animationen für Fade-In/Out */
