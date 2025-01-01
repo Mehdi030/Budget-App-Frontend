@@ -3,29 +3,32 @@
     <h2 class="transaction-list-title">Transaktionsliste</h2>
     <transition-group name="fade" tag="ul" class="transaction-list">
       <li
-        v-for="(transaction, index) in localTransactions.slice(0, 5)"
+        v-for="transaction in localTransactions"
         :key="transaction.id"
         class="transaction-item"
       >
-        <!-- Transaktion als Button -->
-        <button
-          class="transaction-button"
-          @click="handleEditTransaction(transaction)"
-        >
-          <div class="transaction-description">
-            {{ transaction.beschreibung }} - {{ transaction.betrag }} €
-          </div>
-          <div class="transaction-details">
-            ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
-          </div>
-        </button>
+        <div class="transaction-info">
+          <!-- Bearbeiten-Button -->
+          <button class="transaction-button" @click="handleEditTransaction(transaction)">
+            <div class="transaction-description">
+              {{ transaction.beschreibung }} - {{ transaction.betrag }} €
+            </div>
+            <div class="transaction-details">
+              ({{ transaction.kategorie }}) am {{ formatDatum(transaction.datum) }}
+            </div>
+          </button>
+          <!-- Löschen-Button -->
+          <button class="delete-button" @click="deleteTransaction(transaction.id)">
+            Löschen
+          </button>
+        </div>
       </li>
     </transition-group>
   </div>
 </template>
 
 <script>
-import { getTransactions } from "@/services/apiService";
+import { getTransactions, deleteTransaction } from "@/services/apiService";
 
 export default {
   props: {
@@ -36,7 +39,7 @@ export default {
   },
   data() {
     return {
-      localTransactions: [], // Lokale Kopie der Transaktionsdaten
+      localTransactions: [], // Lokale Kopie der Transaktionen
     };
   },
   watch: {
@@ -61,11 +64,25 @@ export default {
       return date.toLocaleDateString("de-DE"); // Format für deutsche Datumsanzeige
     },
     handleEditTransaction(transaction) {
-      this.$emit("openEditModal", transaction); // Event auslösen
+      this.$emit("openEditModal", transaction); // Event auslösen, um das Bearbeiten zu starten
+    },
+    async deleteTransaction(id) {
+      if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
+        try {
+          await deleteTransaction(id); // API-Aufruf zum Löschen
+          this.localTransactions = this.localTransactions.filter(
+            (transaction) => transaction.id !== id
+          ); // Lokale Liste aktualisieren
+          console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
+        } catch (error) {
+          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+          alert("Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.");
+        }
+      }
     },
   },
   async mounted() {
-    await this.loadTransactions();
+    await this.loadTransactions(); // Transaktionen laden, sobald die Komponente gemountet ist
   },
 };
 </script>
@@ -99,6 +116,12 @@ export default {
   margin-bottom: 10px;
 }
 
+.transaction-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .transaction-button {
   display: flex;
   flex-direction: column;
@@ -129,6 +152,20 @@ export default {
   font-size: 14px;
   color: #666;
   margin-top: 5px;
+}
+
+.delete-button {
+  margin-left: 10px;
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: darkred;
 }
 
 /* Animationen für Fade-In/Out */
