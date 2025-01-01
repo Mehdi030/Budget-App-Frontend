@@ -8,7 +8,7 @@
         @openEditModal="handleEditTransaction"
       />
     </div>
-    <TransactionForm @transactionAdded="loadTransactions" />
+    <TransactionForm @transactionModified="loadTransactions" />
 
     <!-- Bearbeitungsmodal -->
     <EditTransactionModal

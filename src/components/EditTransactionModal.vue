@@ -25,13 +25,35 @@
 </template>
 
 <script>
+import { updateTransaction } from "@/services/apiService";
+
 export default {
   props: ["transaction"],
+  data() {
+    return {
+      localTransaction: { ...this.transaction }, // Lokale Kopie der Transaktion
+    };
+  },
   methods: {
-    saveTransaction() {
-      // API-Aufruf zum Speichern der bearbeiteten Transaktion
-      this.$emit("transactionUpdated", this.transaction);
-      this.$emit("close");
+    async saveTransaction() {
+      try {
+        // API-Aufruf zum Speichern der bearbeiteten Transaktion
+        await updateTransaction(this.localTransaction.id, this.localTransaction);
+        this.$emit("transactionUpdated", this.localTransaction); // Parent benachrichtigen
+        this.$emit("close"); // Modal schließen
+      } catch (error) {
+        console.error("Fehler beim Speichern der Transaktion:", error);
+        alert("Fehler beim Speichern. Bitte versuchen Sie es erneut.");
+      }
+    },
+  },
+  watch: {
+    transaction: {
+      immediate: true,
+      handler(newTransaction) {
+        // Lokale Kopie aktualisieren, wenn sich die Transaktion ändert
+        this.localTransaction = { ...newTransaction };
+      },
     },
   },
 };
