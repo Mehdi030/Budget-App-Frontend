@@ -11,6 +11,7 @@
           <TransactionList
             :transactions="transactions"
             @openEditModal="openEditModal"
+            @deleteTransaction="deleteTransaction"
           />
         </transition-group>
       </div>
@@ -37,7 +38,7 @@ import TransactionChart from "./components/TransactionChart.vue";
 import TransactionList from "./components/TransactionList.vue";
 import TransactionForm from "./components/TransactionForm.vue";
 import EditTransactionModal from "./components/EditTransactionModal.vue";
-import { getTransactions } from "@/services/apiService";
+import { getTransactions, deleteTransaction } from "@/services/apiService";
 
 export default {
   components: {
@@ -65,6 +66,23 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
+
+    /**
+     * Löscht eine Transaktion basierend auf der ID und aktualisiert die Liste.
+     */
+    async deleteTransaction(id) {
+      if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
+        try {
+          await deleteTransaction(id); // API-Aufruf zum Löschen
+          console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
+          await this.reloadTransactions(); // Aktualisiere die Liste nach dem Löschen
+        } catch (error) {
+          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+          // Fehler nur loggen, keine Fehlermeldung im UI anzeigen
+        }
+      }
+    },
+
     /**
      * Handhabung von aktualisierten Transaktionen.
      * Findet die Transaktion und ersetzt sie durch die neue.
@@ -77,6 +95,7 @@ export default {
         this.transactions.splice(index, 1, updatedTransaction);
       }
     },
+
     /**
      * Öffnet das Modal zur Bearbeitung einer Transaktion.
      * @param {Object} transaction Die zu bearbeitende Transaktion
@@ -85,6 +104,7 @@ export default {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
+
     /**
      * Schließt das Modal.
      */
@@ -93,6 +113,7 @@ export default {
       this.showModal = false;
     },
   },
+
   /**
    * Lädt die Transaktionen beim Laden der Komponente.
    */
@@ -162,8 +183,9 @@ export default {
 /* Animationen für Fade-In/Out */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 1.5s ease;
+  transition: opacity 0.5s ease;
 }
+
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
