@@ -17,15 +17,17 @@
     </div>
 
     <div class="form-container">
-      <TransactionForm @transactionAdded="reloadTransactions" />
+      <TransactionForm
+        @transactionAdded="handleTransactionAdded"
+        @transactionUpdated="handleTransactionUpdated"
+      />
     </div>
 
     <EditTransactionModal
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="handleTransactionUpdated"
-      @transactionDeleted="reloadTransactions"
+      @transactionUpdated="reloadTransactions"
     />
   </div>
 </template>
@@ -46,19 +48,23 @@ export default {
   },
   data() {
     return {
-      transactions: [], // Die Liste aller Transaktionen
-      showModal: false, // Status des Modals
-      selectedTransaction: null, // Die aktuell ausgewählte Transaktion
+      transactions: [],
+      showModal: false,
+      selectedTransaction: null,
     };
   },
   methods: {
     async reloadTransactions() {
       try {
-        this.transactions = await getTransactions(); // Lade Transaktionen vom Server
-        console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
+        this.transactions = await getTransactions();
+        console.log("Transaktionsliste erfolgreich aktualisiert:", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
+    },
+    handleTransactionAdded(addedTransaction) {
+      this.transactions.push(addedTransaction);
+      console.log("Neue Transaktion hinzugefügt:", addedTransaction);
     },
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
@@ -66,6 +72,7 @@ export default {
       );
       if (index !== -1) {
         this.transactions.splice(index, 1, updatedTransaction);
+        console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
       }
     },
     openEditModal(transaction) {
@@ -82,6 +89,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Keine Änderungen am CSS */
+</style>
 
 <style scoped>
 /* Container für die gesamte App */

@@ -105,10 +105,14 @@ export default {
 
       try {
         if (this.isEditing) {
-          await updateTransaction(this.newTransaction.id, this.newTransaction);
+          const updatedTransaction = await updateTransaction(
+            this.newTransaction.id,
+            this.newTransaction
+          );
+          this.$emit("transactionUpdated", updatedTransaction); // Update-Event auslösen
         } else {
-          const addedTransaction = await addTransaction(this.newTransaction); // API-Aufruf für Add
-          this.$emit("transactionAdded", addedTransaction); // Hinzugefügt Event mit der Transaktion auslösen
+          const addedTransaction = await addTransaction(this.newTransaction);
+          this.$emit("transactionAdded", addedTransaction); // Add-Event auslösen
         }
         this.resetForm();
       } catch (error) {
