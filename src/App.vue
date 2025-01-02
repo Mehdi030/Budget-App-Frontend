@@ -27,7 +27,8 @@
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="reloadTransactions"
+      @transactionUpdated="handleTransactionUpdated"
+      @transactionDeleted="reloadTransactions"
     />
   </div>
 </template>
@@ -48,12 +49,15 @@ export default {
   },
   data() {
     return {
-      transactions: [],
-      showModal: false,
-      selectedTransaction: null,
+      transactions: [], // Die Liste der Transaktionen
+      showModal: false, // Zustand für das Bearbeitungsmodal
+      selectedTransaction: null, // Aktuell ausgewählte Transaktion
     };
   },
   methods: {
+    /**
+     * Lädt Transaktionen von der API und aktualisiert die Liste.
+     */
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions();
@@ -62,37 +66,53 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
+    /**
+     * Fügt eine neue Transaktion zur Liste hinzu.
+     * @param {Object} addedTransaction - Die neue Transaktion
+     */
     handleTransactionAdded(addedTransaction) {
-      this.transactions.push(addedTransaction);
+      this.transactions.push(addedTransaction); // Neue Transaktion hinzufügen
       console.log("Neue Transaktion hinzugefügt:", addedTransaction);
     },
+    /**
+     * Aktualisiert eine bestehende Transaktion in der Liste.
+     * @param {Object} updatedTransaction - Die aktualisierte Transaktion
+     */
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
         (transaction) => transaction.id === updatedTransaction.id
       );
       if (index !== -1) {
-        this.transactions.splice(index, 1, updatedTransaction);
+        this.transactions.splice(index, 1, updatedTransaction); // Alte Transaktion ersetzen
         console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
+      } else {
+        console.warn("Aktualisierte Transaktion nicht in der Liste gefunden:", updatedTransaction);
       }
     },
+    /**
+     * Öffnet das Bearbeitungsmodal für die ausgewählte Transaktion.
+     * @param {Object} transaction - Die zu bearbeitende Transaktion
+     */
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
+    /**
+     * Schließt das Bearbeitungsmodal.
+     */
     closeModal() {
       this.selectedTransaction = null;
       this.showModal = false;
     },
   },
+  /**
+   * Lädt die Transaktionen beim Mounten der Komponente.
+   */
   async mounted() {
     await this.reloadTransactions();
   },
 };
 </script>
-
-<style scoped>
-/* Keine Änderungen am CSS */
-</style>
 
 <style scoped>
 /* Container für die gesamte App */
