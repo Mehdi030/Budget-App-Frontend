@@ -2,7 +2,6 @@
   <div class="budget-container">
     <h1 class="title">Budgetverwaltung</h1>
     <div class="content">
-      <!-- Chart und Liste im flexiblen Layout -->
       <div class="left-panel">
         <TransactionChart :transactions="transactions" />
       </div>
@@ -17,12 +16,10 @@
       </div>
     </div>
 
-    <!-- Formular für neue Transaktionen -->
     <div class="form-container">
       <TransactionForm @transactionAdded="reloadTransactions" />
     </div>
 
-    <!-- Modal für Transaktionsbearbeitung -->
     <EditTransactionModal
       v-if="showModal"
       :transaction="selectedTransaction"
@@ -32,63 +29,6 @@
     />
   </div>
 </template>
-
-<script>
-import TransactionChart from "./components/TransactionChart.vue";
-import TransactionList from "./components/TransactionList.vue";
-import TransactionForm from "./components/TransactionForm.vue";
-import EditTransactionModal from "./components/EditTransactionModal.vue";
-import { getTransactions } from "@/services/apiService";
-
-export default {
-  components: {
-    TransactionChart,
-    TransactionList,
-    TransactionForm,
-    EditTransactionModal,
-  },
-  data() {
-    return {
-      transactions: [], // Die Liste aller Transaktionen
-      showModal: false, // Status des Modals
-      selectedTransaction: null, // Die aktuell ausgewählte Transaktion
-    };
-  },
-  methods: {
-    async reloadTransactions() {
-      try {
-        this.transactions = await getTransactions(); // Lade Transaktionen vom Server
-        console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
-      } catch (error) {
-        console.error("Fehler beim Laden der Transaktionen:", error);
-      }
-    },
-    handleTransactionUpdated(updatedTransaction) {
-      const index = this.transactions.findIndex(
-        (transaction) => transaction.id === updatedTransaction.id
-      );
-      if (index !== -1) {
-        this.transactions.splice(index, 1, updatedTransaction);
-      }
-    },
-    openEditModal(transaction) {
-      this.selectedTransaction = transaction;
-      this.showModal = true;
-    },
-    closeModal() {
-      this.selectedTransaction = null;
-      this.showModal = false;
-    },
-  },
-  async mounted() {
-    await this.reloadTransactions(); // Initiales Laden der Transaktionen
-  },
-};
-</script>
-
-<style scoped>
-/* Vorhandenes CSS bleibt erhalten */
-</style>
 
 <script>
 import TransactionChart from "./components/TransactionChart.vue";
