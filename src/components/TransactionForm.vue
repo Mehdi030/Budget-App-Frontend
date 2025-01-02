@@ -109,10 +109,10 @@ export default {
             this.newTransaction.id,
             this.newTransaction
           );
-          this.$emit("transactionUpdated", updatedTransaction); // Update-Event auslösen
+          this.$emit("transactionUpdated", updatedTransaction); // Event mit aktualisierter Transaktion
         } else {
           const addedTransaction = await addTransaction(this.newTransaction);
-          this.$emit("transactionAdded", addedTransaction); // Add-Event auslösen
+          this.$emit("transactionAdded", addedTransaction); // Event mit neuer Transaktion
         }
         this.resetForm();
       } catch (error) {
