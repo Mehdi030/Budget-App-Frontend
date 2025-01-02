@@ -74,10 +74,11 @@ export default {
         try {
           await deleteTransaction(id); // API-Aufruf zum Löschen
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
-          this.$emit("deleteTransaction", id); // Event an die Hauptkomponente senden
+          this.$emit("reloadTransactions"); // Fordert die Hauptkomponente auf, die Liste neu zu laden
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
-          this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
+          this.errorMessage =
+            "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
         }
       }
     },
@@ -184,4 +185,3 @@ export default {
   opacity: 0;
 }
 </style>
-

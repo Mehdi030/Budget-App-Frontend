@@ -2,7 +2,6 @@
   <div class="budget-container">
     <h1 class="title">Budgetverwaltung</h1>
     <div class="content">
-      <!-- Chart und Liste im flexiblen Layout -->
       <div class="left-panel">
         <TransactionChart :transactions="transactions" />
       </div>
@@ -11,18 +10,16 @@
           <TransactionList
             :transactions="transactions"
             @openEditModal="openEditModal"
-            @deleteTransaction="deleteTransaction"
+            @reloadTransactions="reloadTransactions"
           />
         </transition-group>
       </div>
     </div>
 
-    <!-- Formular für neue Transaktionen -->
     <div class="form-container">
       <TransactionForm @transactionAdded="reloadTransactions" />
     </div>
 
-    <!-- Modal für Transaktionsbearbeitung -->
     <EditTransactionModal
       v-if="showModal"
       :transaction="selectedTransaction"
@@ -38,7 +35,7 @@ import TransactionChart from "./components/TransactionChart.vue";
 import TransactionList from "./components/TransactionList.vue";
 import TransactionForm from "./components/TransactionForm.vue";
 import EditTransactionModal from "./components/EditTransactionModal.vue";
-import { getTransactions, deleteTransaction } from "@/services/apiService";
+import { getTransactions } from "@/services/apiService";
 
 export default {
   components: {
@@ -55,9 +52,6 @@ export default {
     };
   },
   methods: {
-    /**
-     * Lädt die Transaktionsdaten vom Server und aktualisiert die Anzeige.
-     */
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions(); // Lade Transaktionen vom Server
@@ -66,10 +60,6 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
-    /**
-     * Handhabung von aktualisierten Transaktionen.
-     * Findet die Transaktion und ersetzt sie durch die neue.
-     */
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
         (transaction) => transaction.id === updatedTransaction.id
@@ -78,28 +68,15 @@ export default {
         this.transactions.splice(index, 1, updatedTransaction);
       }
     },
-
-    /**
-     * Öffnet das Modal zur Bearbeitung einer Transaktion.
-     * @param {Object} transaction Die zu bearbeitende Transaktion
-     */
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
-
-    /**
-     * Schließt das Modal.
-     */
     closeModal() {
       this.selectedTransaction = null;
       this.showModal = false;
     },
   },
-
-  /**
-   * Lädt die Transaktionen beim Laden der Komponente.
-   */
   async mounted() {
     await this.reloadTransactions();
   },
