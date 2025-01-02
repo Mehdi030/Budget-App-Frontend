@@ -38,7 +38,11 @@
     </select>
 
     <!-- Datum -->
-    <input type="date" v-model="newTransaction.datum" required />
+    <input
+      type="date"
+      v-model="newTransaction.datum"
+      required
+    />
 
     <!-- Buttons -->
     <div class="button-group">
@@ -101,12 +105,14 @@ export default {
 
       try {
         if (this.isEditing) {
+          // API-Aufruf für Update
           await updateTransaction(this.newTransaction.id, this.newTransaction);
         } else {
+          // API-Aufruf für Add
           await addTransaction(this.newTransaction);
         }
-        this.$emit("transactionModified"); // Signalisiert Änderungen
-        this.resetForm();
+        this.$emit("transactionModified"); // Zentraler Event-Trigger
+        this.resetForm(); // Zurücksetzen des Formulars
       } catch (error) {
         this.errorMessage =
           "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
@@ -123,9 +129,9 @@ export default {
 
       this.isLoading = true;
       try {
-        await deleteTransaction(this.newTransaction.id);
-        this.$emit("transactionModified");
-        this.resetForm();
+        await deleteTransaction(this.newTransaction.id); // API-Aufruf
+        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
+        this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
           "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
@@ -164,3 +170,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+</style>
+
