@@ -84,9 +84,6 @@ export default {
 </script>
 
 <style scoped>
-/* Keine Änderungen am CSS */
-</style>
-
 /* Container für die gesamte App */
 .budget-container {
   max-width: 1400px;
