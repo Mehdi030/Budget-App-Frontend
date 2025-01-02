@@ -52,9 +52,14 @@ export const updateTransaction = async (id, transaction) => {
   });
 };
 
-
-export const deleteTransaction = async (id) =>
-  apiFetch(`/api/transactions/${id}`, { method: "DELETE" });
+export const deleteTransaction = async (id) => {
+  try {
+    return await apiFetch(`/api/transactions/${id}`, { method: "DELETE" });
+  } catch (error) {
+    console.warn(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+    return null; // Fehler wird abgefangen, um das UI nicht zu blockieren
+  }
+};
 
 export const getTotalBudget = async () => apiFetch("/api/totalBudget");
 

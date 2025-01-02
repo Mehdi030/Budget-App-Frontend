@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { getTransactions, deleteTransaction } from "@/services/apiService";
+import { deleteTransaction } from "@/services/apiService";
 
 export default {
   props: {
@@ -55,21 +55,13 @@ export default {
   watch: {
     transactions: {
       immediate: true,
+      deep: true, // Reaktive Beobachtung aktivieren
       handler(newTransactions) {
         this.localTransactions = [...newTransactions]; // Lokale Kopie aktualisieren
       },
     },
   },
   methods: {
-    async loadTransactions() {
-      try {
-        this.localTransactions = await getTransactions(); // API-Aufruf
-        console.log("Transaktionen geladen:", this.localTransactions);
-      } catch (error) {
-        console.error("Fehler beim Laden der Transaktionen:", error);
-        this.errorMessage = "Fehler beim Laden der Transaktionen.";
-      }
-    },
     formatDatum(datum) {
       const date = new Date(datum);
       return date.toLocaleDateString("de-DE"); // Format für deutsche Datumsanzeige
@@ -82,15 +74,13 @@ export default {
         try {
           await deleteTransaction(id); // API-Aufruf zum Löschen
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
+          this.$emit("deleteTransaction", id); // Event an die Hauptkomponente senden
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
           this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
         }
       }
     },
-  },
-  async mounted() {
-    await this.loadTransactions(); // Transaktionen laden, sobald die Komponente gemountet ist
   },
 };
 </script>
