@@ -48,12 +48,15 @@ export default {
   },
   data() {
     return {
-      transactions: [],
-      showModal: false,
-      selectedTransaction: null,
+      transactions: [], // Die Liste aller Transaktionen
+      showModal: false, // Status des Modals
+      selectedTransaction: null, // Die aktuell ausgewählte Transaktion
     };
   },
   methods: {
+    /**
+     * Lädt die Transaktionsdaten vom Server und aktualisiert die Anzeige.
+     */
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions(); // Lade Transaktionen vom Server
@@ -62,26 +65,39 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
+    /**
+     * Handhabung von aktualisierten Transaktionen.
+     * Findet die Transaktion und ersetzt sie durch die neue.
+     */
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
         (transaction) => transaction.id === updatedTransaction.id
       );
       if (index !== -1) {
-        // Ersetze die alte Transaktion mit der aktualisierten
         this.transactions.splice(index, 1, updatedTransaction);
       }
     },
+    /**
+     * Öffnet das Modal zur Bearbeitung einer Transaktion.
+     * @param {Object} transaction Die zu bearbeitende Transaktion
+     */
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
+    /**
+     * Schließt das Modal.
+     */
     closeModal() {
       this.selectedTransaction = null;
       this.showModal = false;
     },
   },
+  /**
+   * Lädt die Transaktionen beim Laden der Komponente.
+   */
   async mounted() {
-    await this.reloadTransactions(); // Lade Transaktionen beim ersten Rendern
+    await this.reloadTransactions();
   },
 };
 </script>
@@ -89,7 +105,7 @@ export default {
 <style scoped>
 /* Container für die gesamte App */
 .budget-container {
-  max-width: 1400px; /* Breitere maximale Breite für den Container */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   text-align: center;
@@ -105,30 +121,30 @@ export default {
 /* Hauptinhalt: Chart und Liste */
 .content {
   display: flex;
-  gap: 40px; /* Größerer Abstand zwischen Chart und Liste */
+  gap: 40px;
   justify-content: space-between;
   margin-bottom: 40px;
 }
 
 /* Chart-Panel */
 .left-panel {
-  flex: 2; /* Chart breiter machen */
+  flex: 2;
   padding: 15px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  min-height: 400px; /* Mindesthöhe für Konsistenz */
+  min-height: 400px;
 }
 
 /* Listen-Panel */
 .right-panel {
-  flex: 1.5; /* Liste schmaler machen als Chart */
+  flex: 1.5;
   padding: 15px;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-height: 500px; /* Begrenze die Höhe */
-  overflow-y: auto; /* Scrollen für viele Einträge */
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 /* Formularcontainer */
@@ -139,8 +155,8 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-width: 800px; /* Begrenze die Breite des Formulars */
-  margin: 20px auto; /* Zentriere das Formular */
+  max-width: 800px;
+  margin: 20px auto;
 }
 
 /* Animationen für Fade-In/Out */
