@@ -69,8 +69,20 @@ export default {
     handleEditTransaction(transaction) {
       this.$emit("openEditModal", transaction); // Event auslösen, um das Bearbeiten zu starten
     },
-  }
-}
+    async deleteTransaction(id) {
+      if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
+        try {
+          await deleteTransaction(id); // API-Aufruf zum Löschen
+          console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
+          this.$emit("deleteTransaction", id); // Event an die Hauptkomponente senden
+        } catch (error) {
+          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+          this.errorMessage = "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
+        }
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

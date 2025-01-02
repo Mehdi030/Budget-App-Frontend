@@ -66,23 +66,6 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
-
-    /**
-     * Löscht eine Transaktion basierend auf der ID und aktualisiert die Liste.
-     */
-    async deleteTransaction(id) {
-      if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
-        try {
-          await deleteTransaction(id); // API-Aufruf zum Löschen
-          console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
-          await this.reloadTransactions(); // Aktualisiere die Liste nach dem Löschen
-        } catch (error) {
-          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
-          // Fehler nur loggen, keine Fehlermeldung im UI anzeigen
-        }
-      }
-    },
-
     /**
      * Handhabung von aktualisierten Transaktionen.
      * Findet die Transaktion und ersetzt sie durch die neue.
