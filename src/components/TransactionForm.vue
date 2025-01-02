@@ -7,7 +7,6 @@
       placeholder="Beschreibung"
       required
     />
-
     <!-- Betrag -->
     <input
       type="number"
@@ -17,7 +16,6 @@
       min="0.01"
       step="0.01"
     />
-
     <!-- Kategorie -->
     <select v-model="newTransaction.kategorie" required>
       <option value="">Kategorie wählen</option>
@@ -29,21 +27,18 @@
       <option value="Bildung">Bildung</option>
       <option value="Sonstiges">Sonstiges</option>
     </select>
-
     <!-- Typ -->
     <select v-model="newTransaction.typ" required>
       <option value="">Typ wählen</option>
       <option value="Einnahme">Einnahme</option>
       <option value="Ausgabe">Ausgabe</option>
     </select>
-
     <!-- Datum -->
     <input
       type="date"
       v-model="newTransaction.datum"
       required
     />
-
     <!-- Buttons -->
     <div class="button-group">
       <button type="submit" :disabled="isLoading" class="add-button">
@@ -58,7 +53,6 @@
         Löschen
       </button>
     </div>
-
     <!-- Fehlermeldung -->
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </form>
@@ -99,22 +93,19 @@ export default {
           "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
         return;
       }
-
       this.isLoading = true;
       this.errorMessage = "";
-
       try {
         if (this.isEditing) {
           const updatedTransaction = await updateTransaction(
             this.newTransaction.id,
             this.newTransaction
           );
-          this.$emit("transactionUpdated", updatedTransaction); // Event mit aktualisierter Transaktion
+          this.$emit("transactionUpdated", updatedTransaction);
         } else {
           const addedTransaction = await addTransaction(this.newTransaction);
-          this.$emit("transactionAdded", addedTransaction); // Event mit neuer Transaktion
+          this.$emit("transactionAdded", addedTransaction);
         }
-        this.resetForm();
       } catch (error) {
         this.errorMessage =
           "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
@@ -128,12 +119,10 @@ export default {
         this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
         return;
       }
-
       this.isLoading = true;
       try {
         await deleteTransaction(this.newTransaction.id);
         this.$emit("transactionDeleted", this.newTransaction.id);
-        this.resetForm();
       } catch (error) {
         this.errorMessage =
           "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
@@ -146,16 +135,6 @@ export default {
       const { beschreibung, betrag, kategorie, typ, datum } = this.newTransaction;
       return beschreibung && betrag > 0 && kategorie && typ && datum;
     },
-    resetForm() {
-      this.newTransaction = {
-        beschreibung: "",
-        betrag: 0,
-        kategorie: "",
-        typ: "",
-        datum: "",
-      };
-      this.isEditing = false;
-    },
   },
   watch: {
     transactionToEdit: {
@@ -164,8 +143,6 @@ export default {
         if (newValue) {
           this.newTransaction = { ...newValue };
           this.isEditing = true;
-        } else {
-          this.resetForm();
         }
       },
     },
