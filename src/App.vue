@@ -17,10 +17,7 @@
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="handleTransactionAdded"
-        @transactionUpdated="handleTransactionUpdated"
-      />
-      @transactionAdded="reloadTransactions"
+        @transactionAdded="reloadTransactions"
         @transactionUpdated="reloadTransactions"
       />
     </div>
@@ -49,12 +46,13 @@ export default {
   },
   data() {
     return {
-      transactions: [], // Die Liste aller Transaktionen
+      transactions: [], // Liste der Transaktionen
       showModal: false, // Status des Modals
-      selectedTransaction: null, // Die aktuell ausgewählte Transaktion
+      selectedTransaction: null, // Aktuell ausgewählte Transaktion
     };
   },
   methods: {
+    // Transaktionsliste vom Server laden
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions();
@@ -63,6 +61,7 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
+    // Update der Transaktionsdaten verarbeiten
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
         (transaction) => transaction.id === updatedTransaction.id
@@ -71,6 +70,16 @@ export default {
         this.transactions.splice(index, 1, updatedTransaction);
         console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
       }
+    },
+    // Bearbeiten eines Eintrags starten
+    openEditModal(transaction) {
+      this.selectedTransaction = transaction;
+      this.showModal = true;
+    },
+    // Modal schließen
+    closeModal() {
+      this.selectedTransaction = null;
+      this.showModal = false;
     },
   },
   async mounted() {
