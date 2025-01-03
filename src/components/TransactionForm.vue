@@ -151,5 +151,5 @@ export default {
 </script>
 
 <style scoped>
-/* Keine Änderungen am CSS */
+
 </style>
