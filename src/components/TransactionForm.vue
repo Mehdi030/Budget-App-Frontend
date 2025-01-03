@@ -34,7 +34,11 @@
       <option value="Ausgabe">Ausgabe</option>
     </select>
     <!-- Datum -->
-    <input type="date" v-model="newTransaction.datum" required />
+    <input
+      type="date"
+      v-model="newTransaction.datum"
+      required
+    />
     <!-- Buttons -->
     <div class="button-group">
       <button type="submit" :disabled="isLoading" class="add-button">
@@ -89,21 +93,19 @@ export default {
           "Bitte füllen Sie alle Felder aus und geben Sie einen gültigen Betrag ein.";
         return;
       }
-
       this.isLoading = true;
       this.errorMessage = "";
-
       try {
         if (this.isEditing) {
-          // API-Aufruf für Update
-          await updateTransaction(this.newTransaction.id, this.newTransaction);
-          this.$emit("transactionUpdated", this.newTransaction);
+          const updatedTransaction = await updateTransaction(
+            this.newTransaction.id,
+            this.newTransaction
+          );
+          this.$emit("transactionUpdated", updatedTransaction);
         } else {
-          // API-Aufruf für Add
           const addedTransaction = await addTransaction(this.newTransaction);
           this.$emit("transactionAdded", addedTransaction);
         }
-        this.resetForm(); // Eingabefelder zurücksetzen
       } catch (error) {
         this.errorMessage =
           "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
@@ -117,12 +119,10 @@ export default {
         this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
         return;
       }
-
       this.isLoading = true;
       try {
-        await deleteTransaction(this.newTransaction.id); // API-Aufruf
-        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
-        this.resetForm(); // Formular zurücksetzen
+        await deleteTransaction(this.newTransaction.id);
+        this.$emit("transactionDeleted", this.newTransaction.id);
       } catch (error) {
         this.errorMessage =
           "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
@@ -135,16 +135,6 @@ export default {
       const { beschreibung, betrag, kategorie, typ, datum } = this.newTransaction;
       return beschreibung && betrag > 0 && kategorie && typ && datum;
     },
-    resetForm() {
-      this.newTransaction = {
-        beschreibung: "",
-        betrag: 0,
-        kategorie: "",
-        typ: "",
-        datum: "",
-      };
-      this.isEditing = false;
-    },
   },
   watch: {
     transactionToEdit: {
@@ -153,8 +143,6 @@ export default {
         if (newValue) {
           this.newTransaction = { ...newValue };
           this.isEditing = true;
-        } else {
-          this.resetForm();
         }
       },
     },

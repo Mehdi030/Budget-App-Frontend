@@ -10,7 +10,7 @@ import { Chart, registerables } from "chart.js";
 export default {
   props: ["transactions"],
   mounted() {
-    Chart.register(...registerables); // Registriere alle notwendigen Komponenten
+    Chart.register(...registerables);
     this.createChart();
   },
   watch: {
@@ -57,15 +57,7 @@ export default {
       const labels = [];
       const incomeData = [];
       const expenseData = [];
-      if (!Array.isArray(this.transactions)) {
-        console.error("Ungültige Transaktionsdaten:", this.transactions);
-        return;
-      }
       this.transactions.forEach((transaction) => {
-        if (!transaction.kategorie || !transaction.typ || transaction.betrag === undefined) {
-          console.warn("Ungültige Transaktion übersprungen:", transaction);
-          return;
-        }
         if (!labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
         }
@@ -96,6 +88,7 @@ export default {
     }
   },
 };
+
 </script>
 
 <style scoped>

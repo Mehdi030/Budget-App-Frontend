@@ -10,14 +10,15 @@
           <TransactionList
             :transactions="transactions"
             @openEditModal="openEditModal"
+            @reloadTransactions="reloadTransactions"
           />
         </transition-group>
       </div>
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="handleTransactionAdded"
-        @transactionUpdated="handleTransactionUpdated"
+        @transactionAdded="reloadTransactions"
+        @transactionUpdated="reloadTransactions"
       />
     </div>
     <EditTransactionModal
@@ -45,31 +46,18 @@ export default {
   },
   data() {
     return {
-      transactions: [],
-      showModal: false,
-      selectedTransaction: null,
+      transactions: [], // Die Liste aller Transaktionen
+      showModal: false, // Status des Modals
+      selectedTransaction: null, // Die aktuell ausgewählte Transaktion
     };
   },
   methods: {
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions();
-        console.log("Transaktionsliste erfolgreich aktualisiert:", this.transactions);
+        console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
-      }
-    },
-    handleTransactionAdded(addedTransaction) {
-      this.transactions.push(addedTransaction); // Schneller hinzufügen
-      console.log("Neue Transaktion hinzugefügt:", addedTransaction);
-    },
-    handleTransactionUpdated(updatedTransaction) {
-      const index = this.transactions.findIndex(
-        (transaction) => transaction.id === updatedTransaction.id
-      );
-      if (index !== -1) {
-        this.transactions.splice(index, 1, updatedTransaction);
-        console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
       }
     },
     openEditModal(transaction) {
