@@ -135,6 +135,16 @@ export default {
       const { beschreibung, betrag, kategorie, typ, datum } = this.newTransaction;
       return beschreibung && betrag > 0 && kategorie && typ && datum;
     },
+    resetForm() {
+      this.newTransaction = {
+        beschreibung: "",
+        betrag: 0,
+        kategorie: "",
+        typ: "",
+        datum: "",
+      };
+      this.isEditing = false;
+    },
   },
   watch: {
     transactionToEdit: {
