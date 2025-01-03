@@ -17,7 +17,10 @@
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="reloadTransactions"
+        @transactionAdded="handleTransactionAdded"
+        @transactionUpdated="handleTransactionUpdated"
+      />
+      @transactionAdded="reloadTransactions"
         @transactionUpdated="reloadTransactions"
       />
     </div>
@@ -55,18 +58,19 @@ export default {
     async reloadTransactions() {
       try {
         this.transactions = await getTransactions();
-        console.log("Transaktionsliste erfolgreich aktualisiert.", this.transactions);
+        console.log("Transaktionsliste erfolgreich aktualisiert:", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
-    openEditModal(transaction) {
-      this.selectedTransaction = transaction;
-      this.showModal = true;
-    },
-    closeModal() {
-      this.selectedTransaction = null;
-      this.showModal = false;
+    handleTransactionUpdated(updatedTransaction) {
+      const index = this.transactions.findIndex(
+        (transaction) => transaction.id === updatedTransaction.id
+      );
+      if (index !== -1) {
+        this.transactions.splice(index, 1, updatedTransaction);
+        console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
+      }
     },
   },
   async mounted() {
