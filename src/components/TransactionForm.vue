@@ -14,8 +14,8 @@
       v-model="newTransaction.betrag"
       placeholder="Betrag"
       required
-      min="0.01"
-      step="0.01"
+      min="0.1"
+      step="0.1"
     />
 
     <!-- Kategorie -->
@@ -45,6 +45,14 @@
       <button type="submit" :disabled="isLoading" class="add-button">
         {{ isEditing ? "Aktualisieren" : "Hinzufügen" }}
       </button>
+      <button
+        type="button"
+        @click="deleteTransaction"
+        class="delete-button"
+        v-if="isEditing"
+      >
+        Löschen
+      </button>
     </div>
 
     <!-- Fehlermeldung -->
@@ -53,7 +61,11 @@
 </template>
 
 <script>
-import { addTransaction, updateTransaction } from "@/services/apiService";
+import {
+  addTransaction,
+  updateTransaction,
+  deleteTransaction,
+} from "@/services/apiService";
 
 export default {
   props: {
@@ -89,19 +101,40 @@ export default {
 
       try {
         if (this.isEditing) {
+          // API-Aufruf für Update
           const updatedTransaction = await updateTransaction(
             this.newTransaction.id,
             this.newTransaction
           );
           this.$emit("transactionUpdated", updatedTransaction); // Sende das aktualisierte Objekt
         } else {
+          // API-Aufruf für Add
           const addedTransaction = await addTransaction(this.newTransaction);
           this.$emit("transactionAdded", addedTransaction); // Sende das hinzugefügte Objekt
         }
-        this.resetForm(); // Formular zurücksetzen
+        this.resetForm(); // Zurücksetzen des Formulars
       } catch (error) {
         this.errorMessage =
           "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async deleteTransaction() {
+      if (!this.newTransaction.id) {
+        this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
+        return;
+      }
+
+      this.isLoading = true;
+      try {
+        await deleteTransaction(this.newTransaction.id); // API-Aufruf
+        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
+        this.resetForm(); // Formular zurücksetzen
+      } catch (error) {
+        this.errorMessage =
+          "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -140,5 +173,5 @@ export default {
 </script>
 
 <style scoped>
-/* Keine Änderungen am CSS */
+
 </style>
