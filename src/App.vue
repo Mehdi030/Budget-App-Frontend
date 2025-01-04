@@ -17,15 +17,15 @@
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="reloadTransactions"
-        @transactionUpdated="reloadTransactions"
+        @transactionAdded="handleTransactionAdded"
+        @transactionUpdated="handleTransactionUpdated"
       />
     </div>
     <EditTransactionModal
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="reloadTransactions"
+      @transactionUpdated="handleTransactionUpdated"
     />
   </div>
 </template>
@@ -61,15 +61,22 @@ export default {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
-    // Update der Transaktionsdaten verarbeiten
+    // Neue Transaktion hinzufügen
+    handleTransactionAdded(addedTransaction) {
+      this.transactions.push(addedTransaction); // Lokale Liste aktualisieren
+      console.log("Neue Transaktion hinzugefügt:", addedTransaction);
+      this.reloadTransactions(); // Daten neu laden
+    },
+    // Transaktion aktualisieren
     handleTransactionUpdated(updatedTransaction) {
       const index = this.transactions.findIndex(
         (transaction) => transaction.id === updatedTransaction.id
       );
       if (index !== -1) {
-        this.transactions.splice(index, 1, updatedTransaction);
+        this.transactions.splice(index, 1, updatedTransaction); // Lokale Liste aktualisieren
         console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
       }
+      this.reloadTransactions(); // API-Daten neu laden
     },
     // Bearbeiten eines Eintrags starten
     openEditModal(transaction) {
