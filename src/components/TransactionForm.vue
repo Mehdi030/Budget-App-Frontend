@@ -123,9 +123,7 @@ export default {
         this.isLoading = false;
       }
     },
-  },
-
-  async deleteTransaction() {
+    async deleteTransaction() {
       if (!this.newTransaction.id) {
         this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
         return;
@@ -177,5 +175,5 @@ export default {
 </script>
 
 <style scoped>
-
+/* Du kannst hier Styling hinzufügen, wenn erforderlich */
 </style>
