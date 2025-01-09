@@ -113,7 +113,7 @@ export default {
           updatedTransaction = await addTransaction(this.newTransaction);
           console.log("Neue Transaktion hinzugefügt:", updatedTransaction);
         }
-        this.$emit("transactionModified", updatedTransaction); // Emitte die aktualisierte Transaktion
+        this.$emit("transactionModified"); // Aktualisierte Daten signalisieren
         this.resetForm(); // Zurücksetzen des Formulars
       } catch (error) {
         this.errorMessage =
@@ -132,7 +132,8 @@ export default {
       this.isLoading = true;
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
-        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
+        this.$emit("transactionDeleted", this.newTransaction.id); // Signalisiert das Löschen
+        this.$emit("reloadData"); // Chart und andere Daten aktualisieren
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
@@ -175,5 +176,5 @@ export default {
 </script>
 
 <style scoped>
-/* Du kannst hier Styling hinzufügen, wenn erforderlich */
+/* Hier können Stile hinzugefügt werden */
 </style>
