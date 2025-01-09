@@ -136,7 +136,7 @@ export default {
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
-          "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
+          "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -182,6 +182,7 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
+
 .error-message {
   color: red;
   font-size: 14px;
