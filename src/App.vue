@@ -17,9 +17,11 @@
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="handleTransactionAdded"
-        @transactionUpdated="handleTransactionUpdated"
+        @transactionAdded="reloadTransactions"
+        @transactionUpdated="reloadTransactions"
+        @transactionDeleted="reloadTransactions"
       />
+
     </div>
     <EditTransactionModal
       v-if="showModal"
