@@ -101,18 +101,16 @@ export default {
 
       try {
         if (this.isEditing) {
-          // API-Aufruf für Update
-          const updatedTransaction = await updateTransaction(
+          await updateTransaction(
             this.newTransaction.id,
             this.newTransaction
           );
-          this.$emit("transactionUpdated", updatedTransaction); // Sende das aktualisierte Objekt
+          this.$emit("reloadTransactions");
         } else {
-          // API-Aufruf für Add
-          const addedTransaction = await addTransaction(this.newTransaction);
-          this.$emit("transactionAdded", addedTransaction); // Sende das hinzugefügte Objekt
+          await addTransaction(this.newTransaction);
+          this.$emit("reloadTransactions");
         }
-        this.resetForm(); // Zurücksetzen des Formulars
+        this.resetForm();
       } catch (error) {
         this.errorMessage =
           "Fehler beim Speichern der Transaktion. Bitte erneut versuchen.";
@@ -129,9 +127,9 @@ export default {
 
       this.isLoading = true;
       try {
-        await deleteTransaction(this.newTransaction.id); // API-Aufruf
-        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
-        this.resetForm(); // Formular zurücksetzen
+        await deleteTransaction(this.newTransaction.id);
+        this.$emit("reloadTransactions");
+        this.resetForm();
       } catch (error) {
         this.errorMessage =
           "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
@@ -173,5 +171,5 @@ export default {
 </script>
 
 <style scoped>
-
+/* Style hier */
 </style>

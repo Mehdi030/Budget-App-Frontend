@@ -72,9 +72,8 @@ export default {
     async deleteTransaction(id) {
       if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
         try {
-          await deleteTransaction(id); // API-Aufruf zum Löschen
-          console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
-          this.$emit("reloadTransactions"); // Fordert die Hauptkomponente auf, die Liste neu zu laden
+          await deleteTransaction(id);
+          this.$emit("reloadTransactions"); // Liste neu laden
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
           this.errorMessage =
@@ -84,6 +83,7 @@ export default {
     },
   },
 };
+
 </script>
 
 <style scoped>
