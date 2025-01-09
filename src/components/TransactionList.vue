@@ -73,12 +73,8 @@ export default {
       if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
         try {
           await deleteTransaction(id); // API-Aufruf zum Löschen
-          this.localTransactions = this.localTransactions.filter(
-            (transaction) => transaction.id !== id
-          ); // Lokale Liste aktualisieren
-          this.$emit("reloadData"); // Fordert die Hauptkomponente auf, die Daten und Charts neu zu laden
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
-          this.errorMessage = ""; // Fehlermeldung zurücksetzen
+          this.$emit("reloadTransactions"); // Fordert die Hauptkomponente auf, die Liste neu zu laden
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
           this.errorMessage =

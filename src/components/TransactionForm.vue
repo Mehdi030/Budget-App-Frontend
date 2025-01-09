@@ -100,20 +100,18 @@ export default {
       this.errorMessage = "";
 
       try {
-        let updatedTransaction;
         if (this.isEditing) {
           // API-Aufruf für Update
-          updatedTransaction = await updateTransaction(
+          const updatedTransaction = await updateTransaction(
             this.newTransaction.id,
             this.newTransaction
           );
-          console.log("Aktualisierte Transaktion:", updatedTransaction);
+          this.$emit("transactionUpdated", updatedTransaction); // Sende das aktualisierte Objekt
         } else {
           // API-Aufruf für Add
-          updatedTransaction = await addTransaction(this.newTransaction);
-          console.log("Neue Transaktion hinzugefügt:", updatedTransaction);
+          const addedTransaction = await addTransaction(this.newTransaction);
+          this.$emit("transactionAdded", addedTransaction); // Sende das hinzugefügte Objekt
         }
-        this.$emit("reloadData"); // Daten und Charts neu laden
         this.resetForm(); // Zurücksetzen des Formulars
       } catch (error) {
         this.errorMessage =
@@ -132,11 +130,11 @@ export default {
       this.isLoading = true;
       try {
         await deleteTransaction(this.newTransaction.id); // API-Aufruf
-        this.$emit("reloadData"); // Daten und Charts neu laden
+        this.$emit("transactionDeleted", this.newTransaction.id); // Event auslösen
         this.resetForm(); // Formular zurücksetzen
       } catch (error) {
         this.errorMessage =
-          "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
+          "Fehler beim Löschen der Transaktion. Bitte erneut versuchen.";
         console.error(error);
       } finally {
         this.isLoading = false;
@@ -175,18 +173,5 @@ export default {
 </script>
 
 <style scoped>
-.transaction-list-container {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
 
-.error-message {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-  margin-top: 15px;
-}
 </style>
