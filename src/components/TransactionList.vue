@@ -73,8 +73,11 @@ export default {
       if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
         try {
           await deleteTransaction(id); // API-Aufruf zum Löschen
+          this.localTransactions = this.localTransactions.filter(
+            (transaction) => transaction.id !== id
+          ); // Lokale Liste aktualisieren
           console.log(`Transaktion mit ID ${id} erfolgreich gelöscht.`);
-          this.$emit("reloadTransactions"); // Fordert die Hauptkomponente auf, die Liste neu zu laden
+          this.errorMessage = ""; // Fehlermeldung zurücksetzen
         } catch (error) {
           console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
           this.errorMessage =
@@ -138,50 +141,18 @@ export default {
 
 .transaction-button:hover {
   background-color: #f1f5f9;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+  box-shadow: 0 2px 10px rgba(0, 0, 0.1); }
 
-.transaction-description {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-}
+.transaction-description { font-size: 16px; font-weight: bold; color: #555; }
 
-.transaction-details {
-  font-size: 14px;
-  color: #666;
-  margin-top: 5px;
-}
+.transaction-details { font-size: 14px; color: #666; margin-top: 5px; }
 
-.delete-button {
-  margin-left: 10px;
-  background-color: red;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+.delete-button { margin-left: 10px; background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
 
-.delete-button:hover {
-  background-color: darkred;
-}
+.delete-button:hover { background-color: darkred; }
 
-.error-message {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-  margin-top: 15px;
-}
+.error-message { color: red; font-size: 14px; text-align: center; margin-top: 15px; }
 
-/* Animationen für Fade-In/Out */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
+/* Animationen für Fade-In/Out */ .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
 
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
+.fade-enter, .fade-leave-to { opacity: 0; } </style>

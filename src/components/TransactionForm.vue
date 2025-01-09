@@ -100,18 +100,20 @@ export default {
       this.errorMessage = "";
 
       try {
+        let updatedTransaction;
         if (this.isEditing) {
           // API-Aufruf für Update
-          const updatedTransaction = await updateTransaction(
+          updatedTransaction = await updateTransaction(
             this.newTransaction.id,
             this.newTransaction
           );
-          this.$emit("transactionUpdated", updatedTransaction); // Sende das aktualisierte Objekt
+          console.log("Aktualisierte Transaktion:", updatedTransaction);
         } else {
           // API-Aufruf für Add
-          const addedTransaction = await addTransaction(this.newTransaction);
-          this.$emit("transactionAdded", addedTransaction); // Sende das hinzugefügte Objekt
+          updatedTransaction = await addTransaction(this.newTransaction);
+          console.log("Neue Transaktion hinzugefügt:", updatedTransaction);
         }
+        this.$emit("transactionModified", updatedTransaction); // Emitte die aktualisierte Transaktion
         this.resetForm(); // Zurücksetzen des Formulars
       } catch (error) {
         this.errorMessage =
@@ -121,7 +123,9 @@ export default {
         this.isLoading = false;
       }
     },
-    async deleteTransaction() {
+  },
+
+  async deleteTransaction() {
       if (!this.newTransaction.id) {
         this.errorMessage = "Keine Transaktion zum Löschen ausgewählt.";
         return;
