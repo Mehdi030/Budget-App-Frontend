@@ -17,15 +17,15 @@
     </div>
     <div class="form-container">
       <TransactionForm
-        @transactionAdded="handleTransactionAdded"
-        @transactionUpdated="handleTransactionUpdated"
+        @transactionAdded="reloadTransactions"
+        @transactionUpdated="reloadTransactions"
       />
     </div>
     <EditTransactionModal
       v-if="showModal"
       :transaction="selectedTransaction"
       @close="closeModal"
-      @transactionUpdated="handleTransactionUpdated"
+      @transactionUpdated="reloadTransactions"
     />
   </div>
 </template>
@@ -52,38 +52,19 @@ export default {
     };
   },
   methods: {
-    // Transaktionsliste vom Server laden
     async reloadTransactions() {
       try {
-        this.transactions = await getTransactions();
+        const response = await getTransactions();
+        this.transactions = response; // Liste aktualisieren
         console.log("Transaktionsliste erfolgreich aktualisiert:", this.transactions);
       } catch (error) {
         console.error("Fehler beim Laden der Transaktionen:", error);
       }
     },
-    // Neue Transaktion hinzufügen
-    handleTransactionAdded(addedTransaction) {
-      this.transactions.push(addedTransaction); // Lokale Liste aktualisieren
-      console.log("Neue Transaktion hinzugefügt:", addedTransaction);
-      this.reloadTransactions(); // Daten neu laden
-    },
-    // Transaktion aktualisieren
-    handleTransactionUpdated(updatedTransaction) {
-      const index = this.transactions.findIndex(
-        (transaction) => transaction.id === updatedTransaction.id
-      );
-      if (index !== -1) {
-        this.transactions.splice(index, 1, updatedTransaction); // Lokale Liste aktualisieren
-        console.log("Transaktion erfolgreich aktualisiert:", updatedTransaction);
-      }
-      this.reloadTransactions(); // API-Daten neu laden
-    },
-    // Bearbeiten eines Eintrags starten
     openEditModal(transaction) {
       this.selectedTransaction = transaction;
       this.showModal = true;
     },
-    // Modal schließen
     closeModal() {
       this.selectedTransaction = null;
       this.showModal = false;
@@ -93,6 +74,7 @@ export default {
     await this.reloadTransactions();
   },
 };
+
 </script>
 
 <style scoped>

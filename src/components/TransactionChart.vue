@@ -14,7 +14,7 @@ export default {
     this.createChart();
   },
   watch: {
-    transactions: "updateChart",
+    transactions: "updateChart", // Aktualisiert die Chart-Daten, wenn sich die Transaktionen ändern
   },
   methods: {
     createChart() {
@@ -50,7 +50,7 @@ export default {
           },
         },
       });
-      this.updateChart();
+      this.updateChart(); // Initiale Aktualisierung der Chart-Daten
     },
     updateChart() {
       if (!this.chart) return;
@@ -82,13 +82,13 @@ export default {
       this.chart.update();
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
+    // Chart wird zerstört, um Speicherlecks zu vermeiden
     if (this.chart) {
       this.chart.destroy();
     }
   },
 };
-
 </script>
 
 <style scoped>
