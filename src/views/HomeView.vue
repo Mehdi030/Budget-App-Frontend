@@ -51,12 +51,19 @@ export default {
       }
     },
     handleEditTransaction(transaction) {
-      this.transactionToEdit = transaction; // Die zu bearbeitende Transaktion setzen
-      this.showEditModal = true; // Modal anzeigen
+      // Prüfung, ob die Transaktion existiert
+      if (!transaction || !transaction.id) {
+        console.error("Keine gültige Transaktion zur Bearbeitung ausgewählt:", transaction);
+        return;
+      }
+
+      // Transaktion setzen und Modal öffnen
+      this.transactionToEdit = transaction;
+      this.showEditModal = true;
     },
     closeEditModal() {
-      this.showEditModal = false; // Modal schließen
-      this.transactionToEdit = null; // Transaktion zurücksetzen
+      this.transactionToEdit = null;
+      this.showEditModal = false;
     },
   },
   async mounted() {

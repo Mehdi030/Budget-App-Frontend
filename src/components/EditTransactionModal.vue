@@ -36,8 +36,23 @@ export default {
   },
   methods: {
     async saveTransaction() {
+      // Prüfung auf vollständige Daten
+      if (
+        !this.localTransaction ||
+        !this.localTransaction.id ||
+        !this.localTransaction.beschreibung ||
+        !this.localTransaction.betrag ||
+        !this.localTransaction.kategorie ||
+        !this.localTransaction.typ ||
+        !this.localTransaction.datum
+      ) {
+        console.error("Ungültige oder unvollständige Transaktionsdaten:", this.localTransaction);
+        alert("Bitte füllen Sie alle Felder aus, bevor Sie speichern.");
+        return;
+      }
+
       try {
-        // API-Aufruf zum Speichern der bearbeiteten Transaktion
+        // PUT-Request ausführen
         await updateTransaction(this.localTransaction.id, this.localTransaction);
         this.$emit("transactionUpdated", this.localTransaction); // Parent benachrichtigen
         this.$emit("close"); // Modal schließen
