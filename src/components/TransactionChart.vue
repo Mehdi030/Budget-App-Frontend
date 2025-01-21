@@ -9,12 +9,20 @@ import { Chart, registerables } from "chart.js";
 
 export default {
   props: ["transactions"],
+  data() {
+    return {
+      chart: null, // Referenz zum Chart-Objekt
+    };
+  },
   mounted() {
     Chart.register(...registerables);
-    this.createChart();
+    this.createChart(); // Chart beim Mount erstellen
   },
   watch: {
-    transactions: "updateChart", // Aktualisiert die Chart-Daten, wenn sich die Transaktionen ändern
+    transactions: {
+      handler: "updateChart", // Aktualisiert den Chart bei Änderungen
+      deep: true, // Reaktive Beobachtung auch bei Array-Änderungen
+    },
   },
   methods: {
     createChart() {
@@ -22,7 +30,7 @@ export default {
       this.chart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: [],
+          labels: [], // Initial leer
           datasets: [
             {
               label: "Einnahmen",
@@ -43,6 +51,11 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+          },
           scales: {
             y: {
               beginAtZero: true,
@@ -50,13 +63,17 @@ export default {
           },
         },
       });
-      this.updateChart(); // Initiale Aktualisierung der Chart-Daten
+
+      this.updateChart(); // Initiale Daten laden
     },
     updateChart() {
       if (!this.chart) return;
+
+      // Kategorien und Werte sammeln
       const labels = [];
       const incomeData = [];
       const expenseData = [];
+
       this.transactions.forEach((transaction) => {
         if (!labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
@@ -76,14 +93,15 @@ export default {
         expenseData.push(expense);
       });
 
+      // Chart-Daten aktualisieren
       this.chart.data.labels = labels;
-      this.chart.data.datasets[0].data = incomeData;
-      this.chart.data.datasets[1].data = expenseData;
+      this.chart.data.datasets[0].data = incomeData; // Einnahmen
+      this.chart.data.datasets[1].data = expenseData; // Ausgaben
       this.chart.update();
     },
   },
   beforeUnmount() {
-    // Chart wird zerstört, um Speicherlecks zu vermeiden
+    // Chart zerstören, um Speicherlecks zu vermeiden
     if (this.chart) {
       this.chart.destroy();
     }
