@@ -9,33 +9,20 @@ import { Chart, registerables } from "chart.js";
 
 export default {
   props: ["transactions"],
-  data() {
-    return {
-      chart: null, // Referenz zum Chart-Objekt
-    };
-  },
   mounted() {
     Chart.register(...registerables);
-    this.createChart(); // Chart beim Mount erstellen
+    this.createChart();
   },
   watch: {
-    transactions: {
-      handler: "updateChart", // Aktualisiert den Chart bei Änderungen
-      deep: true, // Reaktive Beobachtung auch bei Array-Änderungen
-    },
+    transactions: "updateChart", // Aktualisiert die Chart-Daten, wenn sich die Transaktionen ändern
   },
   methods: {
     createChart() {
-      const ctx = document.getElementById("transactionChart");
-      if (!ctx) {
-        console.error("Canvas-Element nicht gefunden");
-        return;
-      }
-
-      this.chart = new Chart(ctx.getContext("2d"), {
+      const ctx = document.getElementById("transactionChart").getContext("2d");
+      this.chart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: [], // Initial leer
+          labels: [],
           datasets: [
             {
               label: "Einnahmen",
@@ -56,11 +43,6 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "top",
-            },
-          },
           scales: {
             y: {
               beginAtZero: true,
@@ -68,19 +50,13 @@ export default {
           },
         },
       });
-
-      this.updateChart(); // Initiale Daten laden
+      this.updateChart(); // Initiale Aktualisierung der Chart-Daten
     },
     updateChart() {
       if (!this.chart) return;
-
-      console.log("Aktualisiere Chart mit Transaktionen:", this.transactions);
-
       const labels = [];
       const incomeData = [];
       const expenseData = [];
-
-      // Erstelle Labels und Werte für Einnahmen und Ausgaben
       this.transactions.forEach((transaction) => {
         if (!labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
@@ -100,15 +76,14 @@ export default {
         expenseData.push(expense);
       });
 
-      // Aktualisiere Chart-Daten
       this.chart.data.labels = labels;
-      this.chart.data.datasets[0].data = incomeData; // Einnahmen
-      this.chart.data.datasets[1].data = expenseData; // Ausgaben
+      this.chart.data.datasets[0].data = incomeData;
+      this.chart.data.datasets[1].data = expenseData;
       this.chart.update();
     },
   },
   beforeUnmount() {
-    // Chart zerstören, um Speicherlecks zu vermeiden
+    // Chart wird zerstört, um Speicherlecks zu vermeiden
     if (this.chart) {
       this.chart.destroy();
     }
