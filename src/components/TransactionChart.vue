@@ -26,8 +26,13 @@ export default {
   },
   methods: {
     createChart() {
-      const ctx = document.getElementById("transactionChart").getContext("2d");
-      this.chart = new Chart(ctx, {
+      const ctx = document.getElementById("transactionChart");
+      if (!ctx) {
+        console.error("Canvas-Element nicht gefunden");
+        return;
+      }
+
+      this.chart = new Chart(ctx.getContext("2d"), {
         type: "bar",
         data: {
           labels: [], // Initial leer
@@ -69,11 +74,13 @@ export default {
     updateChart() {
       if (!this.chart) return;
 
-      // Kategorien und Werte sammeln
+      console.log("Aktualisiere Chart mit Transaktionen:", this.transactions);
+
       const labels = [];
       const incomeData = [];
       const expenseData = [];
 
+      // Erstelle Labels und Werte für Einnahmen und Ausgaben
       this.transactions.forEach((transaction) => {
         if (!labels.includes(transaction.kategorie)) {
           labels.push(transaction.kategorie);
@@ -93,7 +100,7 @@ export default {
         expenseData.push(expense);
       });
 
-      // Chart-Daten aktualisieren
+      // Aktualisiere Chart-Daten
       this.chart.data.labels = labels;
       this.chart.data.datasets[0].data = incomeData; // Einnahmen
       this.chart.data.datasets[1].data = expenseData; // Ausgaben
