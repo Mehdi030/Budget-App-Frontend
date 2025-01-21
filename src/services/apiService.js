@@ -45,12 +45,15 @@ export const addTransaction = async (transaction) =>
   });
 
 export const updateTransaction = async (id, transaction) => {
-  console.log("Update-Request an API: ", id, transaction);
-  return apiFetch(`/api/transactions/${id}`, {
+  console.log("Update-Request an API: ", id, transaction); // Log für Request-Daten
+  const response = await apiFetch(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(transaction),
   });
+  console.log("Update-Response von API: ", response); // Log für Response-Daten
+  return response;
 };
+
 
 export const deleteTransaction = async (id) => {
   try {

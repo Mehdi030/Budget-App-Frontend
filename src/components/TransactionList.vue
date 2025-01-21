@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { deleteTransaction } from "@/services/apiService";
+import { deleteTransaction, updateTransaction } from "@/services/apiService";
 
 export default {
   props: {
@@ -81,9 +81,34 @@ export default {
         }
       }
     },
+    async updateTransaction(updatedTransaction) {
+      try {
+        const index = this.localTransactions.findIndex(
+          (transaction) => transaction.id === updatedTransaction.id
+        );
+        if (index !== -1) {
+          // API-Aufruf zum Aktualisieren
+          const response = await updateTransaction(
+            updatedTransaction.id,
+            updatedTransaction
+          );
+          console.log("Aktualisierte Transaktion:", response);
+
+          // Lokale Liste aktualisieren
+          this.localTransactions[index] = response;
+        } else {
+          console.warn("Transaction not found in local state.");
+        }
+      } catch (error) {
+        console.error("Fehler beim Aktualisieren der Transaktion:", error);
+        this.errorMessage = "Fehler beim Aktualisieren der Transaktion.";
+      }
+    },
+    handleTransactionUpdate(updatedTransaction) {
+      this.updateTransaction(updatedTransaction); // Funktion zum Bearbeiten
+    },
   },
 };
-
 </script>
 
 <style scoped>
