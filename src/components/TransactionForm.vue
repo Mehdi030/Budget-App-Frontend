@@ -105,10 +105,10 @@ export default {
             this.newTransaction.id,
             this.newTransaction
           );
-          this.$emit("reloadTransactions");
+          this.$emit("reloadTransactions"); // Transaktionen neu laden
         } else {
           await addTransaction(this.newTransaction);
-          this.$emit("reloadTransactions");
+          this.$emit("reloadTransactions"); // Transaktionen neu laden
         }
         this.resetForm();
       } catch (error) {
@@ -128,7 +128,7 @@ export default {
       this.isLoading = true;
       try {
         await deleteTransaction(this.newTransaction.id);
-        this.$emit("reloadTransactions");
+        this.$emit("reloadTransactions"); // Transaktionen neu laden
         this.resetForm();
       } catch (error) {
         this.errorMessage =
@@ -171,5 +171,5 @@ export default {
 </script>
 
 <style scoped>
-/* Style hier */
+/* Styles für das Formular */
 </style>

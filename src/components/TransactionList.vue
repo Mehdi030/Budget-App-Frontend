@@ -1,6 +1,11 @@
 <template>
   <div class="transaction-list-container">
     <h2 class="transaction-list-title">Transaktionsliste</h2>
+
+    <!-- Ladeanzeige -->
+    <div v-if="isLoading" class="loading-overlay">Lädt...</div>
+
+    <!-- Transaktionsliste -->
     <transition-group name="fade" tag="ul" class="transaction-list">
       <li
         v-for="transaction in localTransactions"
@@ -12,6 +17,7 @@
           <button
             class="transaction-button"
             @click="handleEditTransaction(transaction)"
+            aria-label="Transaktion bearbeiten"
           >
             <div class="transaction-description">
               {{ transaction.beschreibung }} - {{ transaction.betrag }} €
@@ -24,6 +30,7 @@
           <button
             class="delete-button"
             @click="deleteTransaction(transaction.id)"
+            aria-label="Transaktion löschen"
           >
             Löschen
           </button>
@@ -49,7 +56,8 @@ export default {
   data() {
     return {
       localTransactions: [], // Lokale Kopie der Transaktionen
-      errorMessage: "", // Fehlermeldungen speichern
+      isLoading: false, // Ladeanzeige für API-Aufrufe
+      errorMessage: "", // Fehlermeldungen anzeigen
     };
   },
   watch: {
@@ -70,42 +78,53 @@ export default {
       this.$emit("openEditModal", transaction); // Event auslösen, um das Bearbeiten zu starten
     },
     async deleteTransaction(id) {
-      if (confirm("Sind Sie sicher, dass Sie diese Transaktion löschen möchten?")) {
-        try {
-          await deleteTransaction(id);
-          this.$emit("reloadTransactions"); // Liste neu laden
-        } catch (error) {
-          console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
-          this.errorMessage =
-            "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
-        }
+      const originalTransactions = [...this.localTransactions]; // Originale Liste speichern
+
+      // Sofortige Entfernung aus der Liste (optimistisches Löschen)
+      this.localTransactions = this.localTransactions.filter(
+        (transaction) => transaction.id !== id
+      );
+
+      this.isLoading = true; // Ladeanzeige aktivieren
+      try {
+        await deleteTransaction(id); // API-Aufruf
+        this.$emit("reloadTransactions"); // Liste neu laden
+      } catch (error) {
+        console.error(`Fehler beim Löschen der Transaktion mit ID ${id}:`, error);
+        this.localTransactions = originalTransactions; // Rollback bei Fehler
+        this.errorMessage =
+          "Fehler beim Löschen der Transaktion. Bitte versuchen Sie es erneut.";
+      } finally {
+        this.isLoading = false; // Ladeanzeige deaktivieren
       }
     },
     async updateTransaction(updatedTransaction) {
-      try {
-        const index = this.localTransactions.findIndex(
-          (transaction) => transaction.id === updatedTransaction.id
-        );
-        if (index !== -1) {
-          // API-Aufruf zum Aktualisieren
-          const response = await updateTransaction(
-            updatedTransaction.id,
-            updatedTransaction
-          );
-          console.log("Aktualisierte Transaktion:", response);
+      const index = this.localTransactions.findIndex(
+        (transaction) => transaction.id === updatedTransaction.id
+      );
+      if (index === -1) {
+        console.warn("Transaction not found in local state.");
+        return;
+      }
 
-          // Lokale Liste aktualisieren
-          this.localTransactions[index] = response;
-        } else {
-          console.warn("Transaction not found in local state.");
-        }
+      const originalTransaction = { ...this.localTransactions[index] }; // Original speichern
+      this.localTransactions[index] = { ...updatedTransaction }; // Optimistisches Update
+
+      this.isLoading = true; // Ladeanzeige aktivieren
+      try {
+        const response = await updateTransaction(
+          updatedTransaction.id,
+          updatedTransaction
+        );
+        this.localTransactions[index] = response; // API-Daten übernehmen
       } catch (error) {
         console.error("Fehler beim Aktualisieren der Transaktion:", error);
-        this.errorMessage = "Fehler beim Aktualisieren der Transaktion.";
+        this.localTransactions[index] = originalTransaction; // Rollback bei Fehler
+        this.errorMessage =
+          "Fehler beim Speichern der Transaktion. Bitte versuchen Sie es erneut.";
+      } finally {
+        this.isLoading = false; // Ladeanzeige deaktivieren
       }
-    },
-    handleTransactionUpdate(updatedTransaction) {
-      this.updateTransaction(updatedTransaction); // Funktion zum Bearbeiten
     },
   },
 };
@@ -208,5 +227,20 @@ export default {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: #333;
+  z-index: 1000;
 }
 </style>
